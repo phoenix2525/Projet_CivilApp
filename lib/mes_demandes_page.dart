@@ -268,13 +268,13 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
                 const Divider(height: 24),
                 const Text('Pièces justificatives cochées :', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                ...demande.piecesFournies.map((p) => Padding(
+                ...demande.piecesFournies.entries.map((entry) => Padding(
                   padding: const EdgeInsets.only(bottom: 4.0),
                   child: Row(
                     children: [
                       const Icon(Icons.check, size: 16, color: Colors.green),
                       const SizedBox(width: 4),
-                      Expanded(child: Text(p, style: const TextStyle(fontSize: 12))),
+                      Expanded(child: Text(entry.key, style: const TextStyle(fontSize: 12))),
                     ],
                   ),
                 )),
