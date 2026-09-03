@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'catalogue_page.dart';
+import 'tableau_de_bord_citoyen_page.dart';
 import 'models/citoyen.dart';
 import 'models/demande.dart';
 
@@ -43,7 +43,7 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const CataloguePage()),
+        MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
       );
     } else if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(

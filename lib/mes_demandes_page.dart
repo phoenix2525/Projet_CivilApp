@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/demande.dart';
 import 'catalogue_page.dart';
+import 'tableau_de_bord_citoyen_page.dart';
 
 class MesDemandesPage extends StatefulWidget {
   const MesDemandesPage({super.key});
@@ -205,7 +206,12 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
           ),
         ],
         onTap: (index) {
-          if (index == 1) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+            );
+          } else if (index == 1) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const CataloguePage()),

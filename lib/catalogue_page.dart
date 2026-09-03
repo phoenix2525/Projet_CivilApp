@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'models/document.dart';
 import 'formulaire_demande_page.dart';
 import 'mes_demandes_page.dart';
+import 'tableau_de_bord_citoyen_page.dart';
 
 class CataloguePage extends StatelessWidget {
   const CataloguePage({super.key});
@@ -88,7 +89,12 @@ class CataloguePage extends StatelessWidget {
           ),
         ],
         onTap: (index) {
-          if (index == 2) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+            );
+          } else if (index == 2) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const MesDemandesPage()),
