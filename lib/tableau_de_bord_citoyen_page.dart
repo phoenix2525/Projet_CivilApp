@@ -42,42 +42,61 @@ class _TableauDeBordCitoyenPageState extends State<TableauDeBordCitoyenPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Espace d'accueil chaleureux
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.green.shade100,
-                  child: Text(
-                    citoyen.prenom[0].toUpperCase() + citoyen.nom[0].toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade900,
+            // Espace d'accueil chaleureux avec bannière
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/banner_dashboard.jpg'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withValues(alpha: 0.3),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      citoyen.prenom[0].toUpperCase() + citoyen.nom[0].toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade900,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Bienvenue,',
-                        style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                      ),
-                      Text(
-                        '${citoyen.prenom} ${citoyen.nom}',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade900,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bienvenue,',
+                          style: TextStyle(fontSize: 16, color: Colors.white70),
                         ),
-                      ),
-                    ],
+                        Text(
+                          '${citoyen.prenom} ${citoyen.nom}',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 32),
 

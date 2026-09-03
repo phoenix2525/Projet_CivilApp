@@ -42,9 +42,20 @@ class CataloguePage extends StatelessWidget {
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
-                      leading: CircleAvatar(
-                        backgroundColor: doc.couleur.withValues(alpha: 0.2),
-                        child: Icon(doc.icon, color: doc.couleur),
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          doc.imagePath,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 60,
+                            height: 60,
+                            color: doc.couleur.withValues(alpha: 0.2),
+                            child: Icon(doc.icon, color: doc.couleur),
+                          ),
+                        ),
                       ),
                       title: Text(
                         doc.titre,

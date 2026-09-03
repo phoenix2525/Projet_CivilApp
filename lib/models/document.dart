@@ -5,6 +5,7 @@ class Document {
   final String titre;
   final String description;
   final IconData icon;
+  final String imagePath;
   final Color couleur;
   final List<String> piecesAFournir;
 
@@ -13,6 +14,7 @@ class Document {
     required this.titre,
     required this.description,
     required this.icon,
+    required this.imagePath,
     required this.couleur,
     required this.piecesAFournir,
   });
@@ -25,6 +27,7 @@ final List<Document> documentsDisponibles = [
     titre: 'Acte de naissance',
     description: 'Copie intégrale de l\'acte de naissance, certifiée conforme par l\'officier d\'état civil.',
     icon: Icons.child_care,
+    imagePath: 'assets/images/doc_naissance.jpg',
     couleur: Colors.green,
     piecesAFournir: [
       'Copie de la CNI/Passeport du déclarant (Parent)',
@@ -37,6 +40,7 @@ final List<Document> documentsDisponibles = [
     titre: 'Extrait de naissance',
     description: 'Document synthétique reprenant les informations essentielles de l\'acte de naissance.',
     icon: Icons.assignment,
+    imagePath: 'assets/images/doc_extrait.jpg',
     couleur: Colors.blue,
     piecesAFournir: [
       'Copie d\'une pièce d\'identité valide (CNI ou Passeport)',
@@ -48,6 +52,7 @@ final List<Document> documentsDisponibles = [
     titre: 'Certificat de mariage',
     description: 'Attestation officielle de l\'union civile, délivrée suite à la célébration du mariage.',
     icon: Icons.favorite,
+    imagePath: 'assets/images/doc_mariage.jpg',
     couleur: Colors.red,
     piecesAFournir: [
       'Copie de la CNI de l\'époux',
@@ -60,6 +65,7 @@ final List<Document> documentsDisponibles = [
     titre: 'Certificat de décès',
     description: 'Document constatant officiellement le décès d\'une personne, nécessaire pour les démarches administratives.',
     icon: Icons.account_box,
+    imagePath: 'assets/images/doc_deces.jpg',
     couleur: Colors.grey,
     piecesAFournir: [
       'Certificat médical de constatation de décès',

@@ -152,9 +152,20 @@ class _MesDemandesPageState extends State<MesDemandesPage> {
                   elevation: 2,
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
-                    leading: CircleAvatar(
-                      backgroundColor: demande.document.couleur.withValues(alpha: 0.2),
-                      child: Icon(demande.document.icon, color: demande.document.couleur),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset(
+                        demande.document.imagePath,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 50,
+                          height: 50,
+                          color: demande.document.couleur.withValues(alpha: 0.2),
+                          child: Icon(demande.document.icon, color: demande.document.couleur),
+                        ),
+                      ),
                     ),
                     title: Text(
                       demande.document.titre,

@@ -217,9 +217,20 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
                 ),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: widget.document.couleur.withValues(alpha: 0.2),
-                      child: Icon(widget.document.icon, color: widget.document.couleur, size: 28),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset(
+                        widget.document.imagePath,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 50,
+                          height: 50,
+                          color: widget.document.couleur.withValues(alpha: 0.2),
+                          child: Icon(widget.document.icon, color: widget.document.couleur, size: 28),
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
