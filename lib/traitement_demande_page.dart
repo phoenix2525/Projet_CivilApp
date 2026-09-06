@@ -77,50 +77,49 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
   @override
   Widget build(BuildContext context) {
     final referenceCourt = 'REQ-${widget.demande.id.substring(widget.demande.id.length > 4 ? widget.demande.id.length - 4 : 0)}';
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Détails & Traitement', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.green.shade900,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Détails & Traitement'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Fil d'ariane
             Row(
               children: [
-                const Text('Demandes > ', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text('Demandes > ', style: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
                 Text(
                   referenceCourt,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green.shade900),
+                  style: textTheme.labelMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
               'Traitement : ${widget.demande.document.titre}',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green.shade900),
+              style: textTheme.headlineSmall?.copyWith(color: colorScheme.primary),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            // Carte 1: Identité du Citoyen Demandeur
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: Colors.green.shade100,
+                          backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
                           radius: 24,
-                          child: const Icon(Icons.person, color: Colors.green, size: 28),
+                          child: Icon(Icons.person, color: colorScheme.primary, size: 28),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -129,23 +128,23 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                             children: [
                               Text(
                                 '${widget.demande.citoyen.prenom} ${widget.demande.citoyen.nom}',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                style: textTheme.titleLarge,
                               ),
                               const SizedBox(height: 4),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.verified, color: Colors.green.shade700, size: 14),
+                                    Icon(Icons.verified, color: colorScheme.primary, size: 14),
                                     const SizedBox(width: 4),
                                     Text(
                                       'Demandeur Officiel Enregistré',
-                                      style: TextStyle(color: Colors.green.shade700, fontSize: 12),
+                                      style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
                                     ),
                                   ],
                                 ),
@@ -155,23 +154,23 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                         ),
                       ],
                     ),
-                    const Divider(height: 24),
-                    _infoRow(Icons.phone, 'Téléphone', widget.demande.citoyen.telephone),
-                    const SizedBox(height: 8),
-                    _infoRow(Icons.email, 'Email', widget.demande.citoyen.email),
-                    const SizedBox(height: 8),
-                    _infoRow(Icons.location_on, 'Adresse Domicile', widget.demande.citoyen.adresse),
+                    const Divider(height: 32),
+                    _infoRow(Icons.phone, 'Téléphone', widget.demande.citoyen.telephone, context),
+                    const SizedBox(height: 12),
+                    _infoRow(Icons.email, 'Email', widget.demande.citoyen.email, context),
+                    const SizedBox(height: 12),
+                    _infoRow(Icons.location_on, 'Adresse Domicile', widget.demande.citoyen.adresse, context),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Carte 2: Données administratives requises saisies dans le formulaire
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -181,23 +180,23 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                         const SizedBox(width: 8),
                         Text(
                           'Données du Formulaire de Demande',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: textTheme.titleMedium,
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Informations nécessaires pour l\'établissement de l\'acte administratif :',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
-                    const Divider(height: 20),
+                    const Divider(height: 24),
 
                     if (widget.demande.donneesFormulaire.isEmpty)
-                      const Text('Aucune donnée saisie.', style: TextStyle(color: Colors.grey))
+                      Text('Aucune donnée saisie.', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant))
                     else
                       ...widget.demande.donneesFormulaire.entries.map((entry) {
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
+                          padding: const EdgeInsets.only(bottom: 12.0),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -205,18 +204,14 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                                 flex: 2,
                                 child: Text(
                                   _formaterCle(entry.key),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700,
-                                  ),
+                                  style: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                                 ),
                               ),
                               Expanded(
                                 flex: 3,
                                 child: Text(
                                   entry.value.isNotEmpty ? entry.value : '-',
-                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                  style: textTheme.bodyMedium,
                                 ),
                               ),
                             ],
@@ -229,41 +224,41 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
             ),
             const SizedBox(height: 16),
 
-            // Carte 3: Check-list et Pièces Fournies
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.checklist, color: Colors.green.shade800),
+                        Icon(Icons.checklist, color: colorScheme.primary),
                         const SizedBox(width: 8),
-                        const Text('Pièces Justificatives Vérifiées', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text('Pièces Justificatives Vérifiées', style: textTheme.titleMedium),
                       ],
                     ),
-                    const Divider(height: 20),
+                    const Divider(height: 24),
                     if (widget.demande.piecesFournies.isEmpty)
-                      const Text('Aucune pièce déclarée.', style: TextStyle(color: Colors.red))
+                      Text('Aucune pièce déclarée.', style: textTheme.bodyMedium?.copyWith(color: colorScheme.error))
                     else
                       ...widget.demande.piecesFournies.entries.map((entry) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Row(
                             children: [
-                              const Icon(Icons.image, color: Colors.green, size: 20),
+                              Icon(Icons.image, color: colorScheme.secondary, size: 20),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   entry.key,
-                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                  style: textTheme.bodyMedium,
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
-                                tooltip: 'Voir l\'image (Simulé)',
+                                icon: Icon(Icons.remove_red_eye, color: colorScheme.primary),
+                                tooltip: 'Voir l\'image',
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Ouverture de ${entry.value}')),
@@ -280,15 +275,15 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
             ),
             const SizedBox(height: 16),
 
-            // Carte 4: Modification du Statut & Notification
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Gestion du Statut & Notification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('Gestion du Statut & Notification', style: textTheme.titleMedium),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       initialValue: _statutActuel,
@@ -309,12 +304,8 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _notifierCitoyen,
-                        icon: const Icon(Icons.notifications_active, color: Colors.white),
-                        label: const Text('Envoyer une notification au citoyen', style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade900,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
+                        icon: const Icon(Icons.notifications_active),
+                        label: const Text('Envoyer une notification au citoyen'),
                       ),
                     ),
                   ],
@@ -323,43 +314,36 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
             ),
             const SizedBox(height: 16),
 
-            // Carte 5: Notes internes Agent
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.edit_note, color: Colors.grey.shade700),
+                        Icon(Icons.edit_note, color: colorScheme.onSurfaceVariant),
                         const SizedBox(width: 8),
-                        const Text('Notes internes Mairie (Agent)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text('Notes internes Mairie (Agent)', style: textTheme.titleMedium),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: _noteController,
                       maxLines: 3,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Saisissez des notes internes (ex: registre volume 3 p. 45)...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
                       child: OutlinedButton.icon(
                         onPressed: _enregistrerNote,
                         icon: const Icon(Icons.save),
                         label: const Text('Enregistrer la note'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.green.shade900,
-                          side: BorderSide(color: Colors.green.shade900),
-                        ),
                       ),
                     ),
                   ],
@@ -416,11 +400,12 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
     }
   }
 
-  Widget _infoRow(IconData icon, String label, String value) {
+  Widget _infoRow(IconData icon, String label, String value, BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: Colors.grey.shade600),
+        Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -428,10 +413,14 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
             children: [
               Text(
                 label.toUpperCase(),
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade500, fontWeight: FontWeight.bold, letterSpacing: 1),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
               ),
               const SizedBox(height: 2),
-              Text(value, style: const TextStyle(fontSize: 14)),
+              Text(value, style: theme.textTheme.bodyMedium),
             ],
           ),
         ),

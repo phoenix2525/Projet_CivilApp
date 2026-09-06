@@ -9,23 +9,23 @@ class CataloguePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Catalogue des Documents'),
-        backgroundColor: Colors.green.shade900,
-        foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Sélectionnez le type de document d\'état civil que vous souhaitez consulter ou demander. Nos services dématérialisés assurent un traitement rapide et sécurisé.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade700,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -36,9 +36,9 @@ class CataloguePage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final doc = documentsDisponibles[index];
                   return Card(
-                    elevation: 2,
+                    elevation: 1,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
@@ -52,20 +52,25 @@ class CataloguePage extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) => Container(
                             width: 60,
                             height: 60,
-                            color: doc.couleur.withValues(alpha: 0.2),
+                            color: doc.couleur.withValues(alpha: 0.1),
                             child: Icon(doc.icon, color: doc.couleur),
                           ),
                         ),
                       ),
                       title: Text(
                         doc.titre,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: textTheme.titleMedium,
                       ),
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(doc.description),
+                        child: Text(
+                          doc.description,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: colorScheme.outlineVariant),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -83,8 +88,10 @@ class CataloguePage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // 1 pour Catalogue
-        selectedItemColor: Colors.green.shade900,
+        currentIndex: 1,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.onSurfaceVariant,
+        backgroundColor: colorScheme.surface,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

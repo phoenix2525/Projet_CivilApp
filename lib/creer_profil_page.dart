@@ -52,6 +52,25 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
     }
   }
 
+  void _simulerConnexionSociale(String provider) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Connexion via $provider réussie.')),
+    );
+    
+    DatabaseSimulee.citoyenConnecte = Citoyen(
+      prenom: 'Citoyen',
+      nom: provider,
+      telephone: '000000000',
+      email: 'citoyen@$provider.com',
+      adresse: 'Dakar',
+    );
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,9 +116,53 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      _simulerConnexionSociale('Google');
+                    },
+                    icon: Image.network(
+                      'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
+                      height: 24,
+                    ),
+                    label: const Text('Continuer avec Google', style: TextStyle(color: Colors.black87, fontSize: 16)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      _simulerConnexionSociale('Apple');
+                    },
+                    icon: const Icon(Icons.apple, color: Colors.black, size: 28),
+                    label: const Text('Continuer avec Apple', style: TextStyle(color: Colors.black87, fontSize: 16)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('OU', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.bold)),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
-                // Formulaire
                 Row(
                   children: [
                     Expanded(

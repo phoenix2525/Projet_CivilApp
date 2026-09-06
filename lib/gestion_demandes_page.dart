@@ -56,24 +56,23 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
   @override
   Widget build(BuildContext context) {
     final demandes = _demandesFiltrees();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Espace Agent - Demandes', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.green.shade900,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Espace Agent - Demandes'),
         actions: [
-          // Affichage de l'agent connecté
           if (DatabaseSimulee.agentConnecte != null)
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: colorScheme.surface,
                 radius: 16,
                 child: Text(
                   DatabaseSimulee.agentConnecte!.prenom[0],
-                  style: TextStyle(color: Colors.green.shade900, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -82,44 +81,32 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
             tooltip: 'Déconnexion',
             onPressed: () {
               DatabaseSimulee.agentConnecte = null;
-              Navigator.pop(context); // Retour à la page de connexion
+              Navigator.pop(context);
             },
           )
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Liste des demandes reçues',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green.shade900),
+              style: textTheme.headlineSmall?.copyWith(color: colorScheme.primary),
             ),
             const SizedBox(height: 8),
             Text(
               'Consultez et traitez les demandes citoyennes récentes.',
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
 
-            // Barre de recherche (conforme à la maquette)
             TextField(
               controller: _rechercheController,
               decoration: InputDecoration(
                 hintText: 'Rechercher une demande...',
                 prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onChanged: (value) {
                 setState(() {
@@ -129,18 +116,16 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
             ),
             const SizedBox(height: 12),
 
-            // Ligne de filtres par statut (conforme à la maquette "Filtrer")
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  // Bouton "Tous"
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: FilterChip(
                       label: const Text('Tous'),
                       selected: _filtreStatut == null,
-                      selectedColor: Colors.green.shade100,
+                      selectedColor: colorScheme.primary.withValues(alpha: 0.2),
                       onSelected: (selected) {
                         setState(() {
                           _filtreStatut = null;
@@ -148,7 +133,6 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                       },
                     ),
                   ),
-                  // Boutons pour chaque statut
                   ..._statuts.map((statut) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
@@ -175,13 +159,13 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.inbox, size: 64, color: Colors.grey.shade300),
+                          Icon(Icons.inbox, size: 64, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
                           const SizedBox(height: 16),
                           Text(
                             _rechercheTexte.isNotEmpty || _filtreStatut != null
                                 ? 'Aucune demande ne correspond à vos critères.'
                                 : 'Aucune demande pour le moment.',
-                            style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
+                            style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -192,34 +176,32 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                       itemBuilder: (context, index) {
                         final demande = demandes[index];
                         final statutCouleur = _couleurStatut(demande.statut);
-
-                        // Formater la date
                         final dateFormatee = '${demande.dateDemande.day}/${demande.dateDemande.month}/${demande.dateDemande.year}';
-                        // Référence courte
                         final reference = 'REF-${demande.id.substring(demande.id.length > 4 ? demande.id.length - 4 : 0)}';
 
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(16),
                             leading: CircleAvatar(
-                              backgroundColor: Colors.green.shade100,
-                              child: Icon(Icons.description, color: Colors.green.shade900),
+                              backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
+                              child: Icon(Icons.description, color: colorScheme.primary),
                             ),
                             title: Text(
                               '${demande.citoyen.prenom} ${demande.citoyen.nom}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: textTheme.titleMedium,
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 4),
-                                Text(demande.document.titre),
+                                Text(demande.document.titre, style: textTheme.bodyMedium),
                                 const SizedBox(height: 4),
                                 Text(
                                   '$dateFormatee  •  Réf: $reference',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                                  style: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
@@ -236,7 +218,7 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                                 ),
                               ],
                             ),
-                            trailing: const Icon(Icons.chevron_right),
+                            trailing: Icon(Icons.chevron_right, color: colorScheme.outlineVariant),
                             onTap: () {
                               Navigator.push(
                                 context,
