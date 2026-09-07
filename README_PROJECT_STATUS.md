@@ -74,4 +74,13 @@ lib/
 ```
 
 ---
-**Note pour l'assistant IA :** Lors de chaque nouvelle session, lisez ce fichier pour reprendre le contexte exact du projet.
+
+## Exigences de Design & Interface (UI/UX)
+L'application doit respecter strictement les principes techniques vus en cours (setState, Widgets de base, Navigation), mais se démarquer par une approche **créative, réactive et innovante** :
+- **Glassmorphism (Effet "Liquid Glass" iOS)** : Utilisation de `BackdropFilter` et de couleurs semi-transparentes pour donner un effet de verre dépoli moderne, particulièrement sur l'accueil et les cartes.
+- **Animations fluides** : Utilisation du widget `Hero` pour les transitions entre le catalogue et le formulaire.
+- **Réactivité** : Barre de recherche instantanée (filtrage `setState`) dans le catalogue.
+- **Feedback moderne** : `SnackBar` flottants avec bordures arrondies pour les validations.
+
+---
+**Note pour l'assistant IA :** Lors de chaque nouvelle session, lisez ce fichier pour reprendre le contexte exact du projet. Respectez toujours les exigences de design mentionnées ci-dessus.

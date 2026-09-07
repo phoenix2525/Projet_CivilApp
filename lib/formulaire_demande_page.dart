@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'models/document.dart';
@@ -183,8 +184,17 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Demande de ${widget.document.titre} transmise à la mairie avec succès !'),
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(child: Text('Demande de ${widget.document.titre} transmise !')),
+            ],
+          ),
           backgroundColor: Colors.green.shade800,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(16),
         ),
       );
       Navigator.pop(context); // Retour au catalogue
@@ -195,71 +205,108 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Demande : ${widget.document.titre}'),
-        backgroundColor: Colors.green.shade900,
-        foregroundColor: Colors.white,
+        title: Text('Demande : ${widget.document.titre}', style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.green.shade900,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: Colors.white.withValues(alpha: 0.7)),
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // En-tête du document choisi
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFE8F5E9), Color(0xFFFAFAFA)],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // En-tête du document choisi avec Glassmorphism et Hero
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        widget.document.imagePath,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 50,
-                          height: 50,
-                          color: widget.document.couleur.withValues(alpha: 0.2),
-                          child: Icon(widget.document.icon, color: widget.document.couleur, size: 28),
+                      borderRadius: BorderRadius.circular(16),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Hero(
+                                tag: 'doc_icon_${widget.document.id}',
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    widget.document.imagePath,
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      width: 70,
+                                      height: 70,
+                                      color: widget.document.couleur.withValues(alpha: 0.2),
+                                      child: Icon(widget.document.icon, color: widget.document.couleur, size: 32),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.document.titre,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green.shade900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      widget.document.description,
+                                      style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.document.titre,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green.shade900,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.document.description,
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-              // Formulaire dynamique selon l'acte
-              _construireFormulaireSpecifique(),
+                    // Formulaire dynamique selon l'acte
+                    _construireFormulaireSpecifique(),
+
 
               const SizedBox(height: 24),
 
@@ -349,6 +396,9 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
             ],
           ),
         ),
+      ),
+    ),
+        ],
       ),
     );
   }
