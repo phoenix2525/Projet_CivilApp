@@ -8,6 +8,8 @@ class Document {
   final String imagePath;
   final Color couleur;
   final List<String> piecesAFournir;
+  final String delai;
+  final String frais;
 
   Document({
     required this.id,
@@ -17,6 +19,8 @@ class Document {
     required this.imagePath,
     required this.couleur,
     required this.piecesAFournir,
+    this.delai = '48h ouvrées',
+    this.frais = 'Gratuit',
   });
 }
 
@@ -34,6 +38,8 @@ final List<Document> documentsDisponibles = [
       'Certificat d\'accouchement ou d\'attestation médicale de naissance',
       'Livret de famille ou certificat de mariage des parents',
     ],
+    delai: '48h ouvrées',
+    frais: '400 FCFA',
   ),
   Document(
     id: 'extrait_naissance',
@@ -46,6 +52,8 @@ final List<Document> documentsDisponibles = [
       'Copie d\'une pièce d\'identité valide (CNI ou Passeport)',
       'Ancien extrait de naissance ou numéro de registre d\'acte',
     ],
+    delai: '24h à 48h',
+    frais: '400 FCFA',
   ),
   Document(
     id: 'certificat_mariage',
@@ -59,6 +67,8 @@ final List<Document> documentsDisponibles = [
       'Copie de la CNI de l\'épouse',
       'Attestation de célébration de mariage ou numéro de registre',
     ],
+    delai: '48h ouvrées',
+    frais: '400 FCFA',
   ),
   Document(
     id: 'certificat_deces',
@@ -72,5 +82,7 @@ final List<Document> documentsDisponibles = [
       'Copie de la CNI du défunt (si disponible)',
       'Copie de la CNI du déclarant',
     ],
+    delai: '24h ouvrées',
+    frais: 'Gratuit',
   ),
 ];

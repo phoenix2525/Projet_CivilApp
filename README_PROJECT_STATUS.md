@@ -60,15 +60,19 @@ lib/
 ├── main.dart                        # Point d'entrée de l'app
 ├── accueil_page.dart                # Accueil (Choix Citoyen / Agent)
 ├── creer_profil_page.dart           # Création de profil citoyen
-├── catalogue_page.dart              # Catalogue des actes d'état civil
+├── tableau_de_bord_citoyen_page.dart# Tableau de bord citoyen (statistiques & raccourcis)
+├── catalogue_page.dart              # Catalogue des actes d'état civil (recherche & Glassmorphism)
+├── details_document_page.dart       # Détails du document (délais, frais, pièces exigées, parcours)
 ├── formulaire_demande_page.dart     # Formulaire dynamique spécifique par acte + checklist pièces
+├── confirmation_envoi_page.dart     # Écran de confirmation officielle d'envoi avec N° de suivi
 ├── mes_demandes_page.dart           # Suivi des demandes citoyen + notifications
+├── details_demande_citoyen_page.dart# Détails et avancement de la demande citoyen (timeline, données, notes)
 ├── connexion_agent_page.dart        # Connexion espace agent mairie
 ├── gestion_demandes_page.dart       # Interface agent (Liste, recherche, filtres statut)
 ├── traitement_demande_page.dart     # Traitement agent (Champs spécifiques, pièces, statut, notes)
 └── models/
     ├── citoyen.dart                 # Modèle Citoyen
-    ├── document.dart                # Modèle Document (id, titre, description, piecesAFournir)
+    ├── document.dart                # Modèle Document (id, titre, description, piecesAFournir, delai, frais)
     ├── demande.dart                 # Modèle Demande (donneesFormulaire Map, piecesFournies, noteAgent) + DatabaseSimulee
     └── agent.dart                   # Modèle Agent
 ```
