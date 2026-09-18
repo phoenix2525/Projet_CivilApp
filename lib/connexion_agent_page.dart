@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'models/agent.dart';
-import 'models/demande.dart';
 import 'gestion_demandes_page.dart';
+import 'services/firebase_service.dart';
 
 /// Page de connexion réservée aux agents de la mairie.
 /// Design sombre sur fond vert profond, formulaire sur carte blanche.
@@ -40,7 +39,7 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
   /// Valide le formulaire et connecte l'agent
   void _connecter() {
     if (_formKey.currentState!.validate() && _roleSelectionne != null) {
-      DatabaseSimulee.agentConnecte = Agent(
+      FirebaseService.connecterAgent(
         prenom: _prenomController.text.trim(),
         nom: _nomController.text.trim(),
         matricule: _matriculeController.text.trim(),
@@ -209,7 +208,7 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                                 prefixIcon: const Icon(Icons.assignment_ind_outlined),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                               ),
-                              value: _roleSelectionne,
+                              initialValue: _roleSelectionne,
                               items: _roles.map((role) {
                                 return DropdownMenuItem(value: role, child: Text(role));
                               }).toList(),

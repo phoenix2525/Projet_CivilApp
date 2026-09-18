@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models/demande.dart';
+import 'services/firebase_service.dart';
 
 /// Page de traitement d'une demande administrative par un agent de mairie.
 /// Permet de consulter les informations du citoyen, les données de l'acte,
@@ -68,6 +69,13 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
         _statutActuel = nouveauStatut;
         widget.demande.statut = nouveauStatut;
       });
+
+      // Synchronisation Cloud Firestore
+      FirebaseService.mettreAJourStatutDemande(
+        demandeId: widget.demande.id,
+        nouveauStatut: nouveauStatut,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Statut mis à jour : $nouveauStatut'),
@@ -81,7 +89,16 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
 
   /// Enregistre les annotations internes rédigées par l'agent
   void _enregistrerNote() {
-    widget.demande.noteAgent = _noteController.text.trim();
+    final note = _noteController.text.trim();
+    widget.demande.noteAgent = note;
+
+    // Synchronisation Cloud Firestore
+    FirebaseService.mettreAJourStatutDemande(
+      demandeId: widget.demande.id,
+      nouveauStatut: _statutActuel,
+      noteAgent: note,
+    );
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Row(
