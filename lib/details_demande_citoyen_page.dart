@@ -444,34 +444,39 @@ class DetailsDemandeCitoyenPage extends StatelessWidget {
   /// Formate les clés de formulaire pour un affichage lisible
   String _formaterCle(String cle) {
     switch (cle) {
-      case 'prenom': return 'Prénom(s)';
-      case 'nom': return 'Nom';
+      case 'prenom_enfant': return 'Prénom(s) enfant';
+      case 'nom_enfant': return 'Nom enfant';
       case 'sexe': return 'Sexe';
       case 'date_naissance': return 'Date de naissance';
       case 'heure_naissance': return 'Heure de naissance';
       case 'lieu_naissance': return 'Lieu de naissance';
-      case 'numero_registre': return 'N° de Registre';
-      case 'annee_registre': return 'Année du registre';
-      case 'centre_etat_civil': return 'Centre d\'état civil';
-      case 'prenom_pere': return 'Prénom du Père';
-      case 'nom_pere': return 'Nom du Père';
-      case 'profession_pere': return 'Profession du Père';
-      case 'prenom_mere': return 'Prénom de la Mère';
-      case 'nom_mere': return 'Nom de la Mère';
-      case 'profession_mere': return 'Profession de la Mère';
+      case 'prenom_nom_pere': return 'Père';
+      case 'profession_pere': return 'Profession du père';
+      case 'prenom_nom_mere': return 'Mère';
+      case 'profession_mere': return 'Profession de la mère';
       case 'domicile_parents': return 'Domicile des parents';
+      case 'prenom_titulaire': return 'Prénom(s) titulaire';
+      case 'nom_titulaire': return 'Nom titulaire';
+      case 'num_registre': return 'N° de Registre / Acte';
+      case 'annee_registre': return 'Année du Registre';
+      case 'centre_etat_civil': return 'Centre d\'État Civil';
+      case 'prenom_epoux': return 'Prénom(s) de l\'époux';
       case 'nom_epoux': return 'Nom de l\'époux';
-      case 'prenom_epoux': return 'Prénom de l\'époux';
+      case 'date_naissance_epoux': return 'Date de naissance de l\'époux';
+      case 'prenom_epouse': return 'Prénom(s) de l\'épouse';
       case 'nom_epouse': return 'Nom de l\'épouse';
-      case 'prenom_epouse': return 'Prénom de l\'épouse';
+      case 'date_naissance_epouse': return 'Date de naissance de l\'épouse';
       case 'date_mariage': return 'Date du mariage';
       case 'lieu_mariage': return 'Lieu du mariage';
       case 'regime_matrimonial': return 'Régime matrimonial';
-      case 'numero_acte_mariage': return 'N° d\'acte de mariage';
+      case 'num_acte_mariage': return 'N° Acte de Mariage';
+      case 'prenom_defunt': return 'Prénom(s) du défunt';
       case 'nom_defunt': return 'Nom du défunt';
-      case 'prenom_defunt': return 'Prénom du défunt';
+      case 'date_naissance_defunt': return 'Date de naissance du défunt';
       case 'date_deces': return 'Date du décès';
+      case 'heure_deces': return 'Heure du décès';
       case 'lieu_deces': return 'Lieu du décès';
+      case 'prenom_nom_declarant': return 'Déclarant';
       case 'lien_parente_declarant': return 'Lien de parenté';
       case 'cni_declarant': return 'CNI du déclarant';
       default:

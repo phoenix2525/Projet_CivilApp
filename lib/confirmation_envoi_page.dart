@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'models/demande.dart';
 import 'mes_demandes_page.dart';
 import 'tableau_de_bord_citoyen_page.dart';
@@ -19,16 +20,21 @@ class ConfirmationEnvoiPage extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     // Calcul d'un identifiant de suivi lisible pour l'usager
-    final numeroSuivi = 'SN-${demande.dateDemande.year}-${demande.id.length >= 6 ? demande.id.substring(demande.id.length - 6) : demande.id}';
+    final numeroSuivi =
+        'SN-${demande.dateDemande.year}-${demande.id.length >= 6 ? demande.id.substring(demande.id.length - 6) : demande.id}';
 
-    // Nom du bénéficiaire ou titulaire de l'acte
+    // Nom du bénéficiaire ou tutulaire de l'acte
     String beneficiaire = '${demande.citoyen.prenom} ${demande.citoyen.nom}';
-    if (demande.donneesFormulaire.containsKey('prenom') && demande.donneesFormulaire.containsKey('nom')) {
-      beneficiaire = '${demande.donneesFormulaire['prenom']} ${demande.donneesFormulaire['nom']}';
+    if (demande.donneesFormulaire.containsKey('prenom') &&
+        demande.donneesFormulaire.containsKey('nom')) {
+      beneficiaire =
+          '${demande.donneesFormulaire['prenom']} ${demande.donneesFormulaire['nom']}';
     } else if (demande.donneesFormulaire.containsKey('nom_epoux')) {
-      beneficiaire = '${demande.donneesFormulaire['nom_epoux']} & ${demande.donneesFormulaire['nom_epouse']}';
+      beneficiaire =
+          '${demande.donneesFormulaire['nom_epoux']} & ${demande.donneesFormulaire['nom_epouse']}';
     } else if (demande.donneesFormulaire.containsKey('nom_defunt')) {
-      beneficiaire = '${demande.donneesFormulaire['prenom_defunt'] ?? ''} ${demande.donneesFormulaire['nom_defunt']} (Défunt)';
+      beneficiaire =
+          '${demande.donneesFormulaire['prenom_defunt'] ?? ''} ${demande.donneesFormulaire['nom_defunt']} (Défunt)';
     }
 
     return PopScope(
@@ -37,7 +43,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
         if (!didPop) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+            MaterialPageRoute(
+              builder: (context) => const TableauDeBordCitoyenPage(),
+            ),
             (route) => false,
           );
         }
@@ -46,14 +54,17 @@ class ConfirmationEnvoiPage extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Icône de validation animée/stylisée
+                    // Icone de validation
                     Container(
                       width: 90,
                       height: 90,
@@ -80,7 +91,7 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // Message rassurant pour l'usager
+                    // Message  pour l'usager
                     Text(
                       'Votre dossier a bien été reçu par le bureau d\'état civil municipal. Il est actuellement en attente d\'instruction.',
                       style: textTheme.bodyMedium?.copyWith(
@@ -94,7 +105,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                     // Récépissé / Carte de synthèse de la démarche
                     Card(
                       elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
@@ -124,15 +137,22 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: colorScheme.primary.withValues(alpha: 0.1),
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Icon(Icons.qr_code_2, color: colorScheme.primary, size: 22),
+                                  child: Icon(
+                                    Icons.qr_code_2,
+                                    color: colorScheme.primary,
+                                    size: 22,
+                                  ),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'N° de Suivi officiel',
@@ -155,20 +175,35 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                                 ),
                                 IconButton(
                                   tooltip: 'Copier le numéro',
-                                  icon: const Icon(Icons.copy_rounded, size: 20),
+                                  icon: const Icon(
+                                    Icons.copy_rounded,
+                                    size: 20,
+                                  ),
                                   onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: numeroSuivi));
+                                    Clipboard.setData(
+                                      ClipboardData(text: numeroSuivi),
+                                    );
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: const Row(
                                           children: [
-                                            Icon(Icons.check, color: Colors.white, size: 18),
+                                            Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                              size: 18,
+                                            ),
                                             SizedBox(width: 8),
-                                            Text('Numéro de suivi copié dans le presse-papiers !'),
+                                            Text(
+                                              'Numéro de suivi copié dans le presse-papiers !',
+                                            ),
                                           ],
                                         ),
                                         behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
                                         margin: const EdgeInsets.all(16),
                                       ),
                                     );
@@ -190,7 +225,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const MesDemandesPage()),
+                            MaterialPageRoute(
+                              builder: (context) => const MesDemandesPage(),
+                            ),
                           );
                         },
                         icon: const Icon(Icons.assignment_outlined),
@@ -201,7 +238,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: colorScheme.onPrimary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -214,14 +253,19 @@ class ConfirmationEnvoiPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const TableauDeBordCitoyenPage(),
+                            ),
                             (route) => false,
                           );
                         },
                         icon: const Icon(Icons.home_outlined),
                         label: const Text('Retour au tableau de bord'),
                         style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -272,7 +316,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 valeur,
-                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                style: textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

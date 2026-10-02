@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'gestion_demandes_page.dart';
-import 'services/firebase_service.dart';
+import 'models/agent.dart';
+import 'models/demande.dart';
 
 /// Page de connexion réservée aux agents de la mairie.
-/// Design sombre sur fond vert profond, formulaire sur carte blanche.
 class ConnexionAgentPage extends StatefulWidget {
   const ConnexionAgentPage({super.key});
 
@@ -39,7 +40,8 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
   /// Valide le formulaire et connecte l'agent
   void _connecter() {
     if (_formKey.currentState!.validate() && _roleSelectionne != null) {
-      FirebaseService.connecterAgent(
+      // Session agent enregistrée dans la base simulée
+      DatabaseSimulee.agentConnecte = Agent(
         prenom: _prenomController.text.trim(),
         nom: _nomController.text.trim(),
         matricule: _matriculeController.text.trim(),
@@ -48,9 +50,13 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bienvenue ${_prenomController.text}, connexion réussie.'),
+          content: Text(
+            'Bienvenue ${_prenomController.text}, connexion réussie.',
+          ),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -64,7 +70,9 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
         SnackBar(
           content: const Text('Veuillez sélectionner votre rôle.'),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -105,7 +113,10 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                        icon: const Icon(
+                          Icons.arrow_back_rounded,
+                          color: Colors.white,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const Spacer(),
@@ -123,9 +134,16 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
                         ),
-                        child: const Icon(Icons.shield_rounded, color: Colors.white, size: 28),
+                        child: const Icon(
+                          Icons.shield_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Column(
@@ -141,7 +159,10 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                           ),
                           Text(
                             'Accès réservé au personnel municipal',
-                            style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 12),
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -157,7 +178,9 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(28),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.08),
@@ -183,34 +206,60 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                             ),
                             Text(
                               'Veuillez renseigner vos informations professionnelles.',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey.shade500),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 13,
+                                color: Colors.grey.shade500,
+                              ),
                             ),
                             const SizedBox(height: 24),
 
-                            // Prénom et Nom côte à côte
+                            // Prénom et Nom cote à cote
                             Row(
                               children: [
-                                Expanded(child: _champTexte(_prenomController, 'Prénom', Icons.person_outline_rounded)),
+                                Expanded(
+                                  child: _champTexte(
+                                    _prenomController,
+                                    'Prénom',
+                                    Icons.person_outline_rounded,
+                                  ),
+                                ),
                                 const SizedBox(width: 12),
-                                Expanded(child: _champTexte(_nomController, 'Nom', Icons.badge_outlined)),
+                                Expanded(
+                                  child: _champTexte(
+                                    _nomController,
+                                    'Nom',
+                                    Icons.badge_outlined,
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 14),
 
                             // Matricule
-                            _champTexte(_matriculeController, 'Matricule Agent', Icons.pin_outlined),
+                            _champTexte(
+                              _matriculeController,
+                              'Matricule Agent',
+                              Icons.pin_outlined,
+                            ),
                             const SizedBox(height: 14),
 
                             // Sélection du rôle
                             DropdownButtonFormField<String>(
                               decoration: InputDecoration(
                                 labelText: 'Rôle dans la mairie',
-                                prefixIcon: const Icon(Icons.assignment_ind_outlined),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                prefixIcon: const Icon(
+                                  Icons.assignment_ind_outlined,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                               initialValue: _roleSelectionne,
                               items: _roles.map((role) {
-                                return DropdownMenuItem(value: role, child: Text(role));
+                                return DropdownMenuItem(
+                                  value: role,
+                                  child: Text(role),
+                                );
                               }).toList(),
                               onChanged: (val) {
                                 setState(() {
@@ -220,17 +269,24 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Encart de sécurité discret
                             Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF062917).withValues(alpha: 0.05),
+                                color: const Color(0xFF062917)
+                                    .withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFF0A6640).withValues(alpha: 0.18)),
+                                border: Border.all(
+                                  color: const Color(0xFF0A6640)
+                                      .withValues(alpha: 0.18),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.security_rounded, color: colorScheme.primary, size: 18),
+                                  Icon(
+                                    Icons.security_rounded,
+                                    color: colorScheme.primary,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
@@ -254,11 +310,18 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                                 icon: const Icon(Icons.login_rounded),
                                 label: Text(
                                   'Accéder à l\'espace agent',
-                                  style: GoogleFonts.hankenGrotesk(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: GoogleFonts.hankenGrotesk(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
                                 ),
                               ),
                             ),
@@ -276,7 +339,7 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
     );
   }
 
-  /// Champ de texte standard avec style moderne
+  /// Champ de texte standard
   Widget _champTexte(TextEditingController ctrl, String label, IconData icone) {
     return TextFormField(
       controller: ctrl,

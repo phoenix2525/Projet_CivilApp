@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'models/document.dart';
 import 'models/demande.dart';
 import 'confirmation_envoi_page.dart';
-import 'services/firebase_service.dart';
 
 /// Page de formulaire de demande d'acte d'état civil.
 /// Le formulaire est dynamique : il s'adapte au type de document sélectionné.
@@ -177,8 +176,8 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
         statut: 'reçue',
       );
 
-      // Enregistrement de la demande (Local + Cloud Firestore)
-      FirebaseService.soumettreDemande(nouvelleDemande);
+      // Enregistrement de la demande en tête de liste de la base simulée
+      DatabaseSimulee.demandes.insert(0, nouvelleDemande);
 
       // Redirection vers la page de confirmation officielle de dépôt
       Navigator.pushReplacement(

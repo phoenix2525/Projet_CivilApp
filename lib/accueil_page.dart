@@ -1,6 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'creer_profil_page.dart';
 import 'connexion_agent_page.dart';
 
@@ -15,7 +17,6 @@ class AccueilPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fond dégradé sombre — effet premium
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -82,7 +83,11 @@ class AccueilPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.lock_outline, size: 14, color: Colors.white38),
+                        const Icon(
+                          Icons.lock_outline,
+                          size: 14,
+                          color: Colors.white38,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Données chiffrées — République du Sénégal',
@@ -116,7 +121,10 @@ class AccueilPage extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white.withValues(alpha: 0.1),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF00C896).withValues(alpha: 0.3),
@@ -125,7 +133,11 @@ class AccueilPage extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(Icons.account_balance_rounded, size: 42, color: Colors.white),
+          child: const Icon(
+            Icons.account_balance_rounded,
+            size: 42,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -154,7 +166,7 @@ class AccueilPage extends StatelessWidget {
     );
   }
 
-  /// Carte principale avec effet glassmorphism
+  /// Carte principale
   Widget _construireCarteGlass(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
@@ -165,7 +177,10 @@ class AccueilPage extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1.5),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.18),
+              width: 1.5,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,15 +196,18 @@ class AccueilPage extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 'Accédez à vos services administratifs en ligne.',
-                style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.white54),
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  color: Colors.white54,
+                ),
               ),
               const SizedBox(height: 28),
 
-              // Bouton citoyen — plein, accent vert lumineux
+              // Bouton citoyen
               _construireBoutonCitoyen(context),
               const SizedBox(height: 14),
 
-              // Bouton agent — transparent, contour blanc
+              // Bouton agent
               _construireBoutonAgent(context),
             ],
           ),
@@ -198,7 +216,7 @@ class AccueilPage extends StatelessWidget {
     );
   }
 
-  /// Bouton espace citoyen — design premium avec gradient
+  /// Bouton espace citoyen
   Widget _construireBoutonCitoyen(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -233,7 +251,11 @@ class AccueilPage extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.person_rounded, color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.person_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -250,19 +272,26 @@ class AccueilPage extends StatelessWidget {
                   ),
                   Text(
                     'Démarrez ou suivez une demande',
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 12),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white,
+              size: 16,
+            ),
           ],
         ),
       ),
     );
   }
 
-  /// Bouton espace agent — contour blanc discret
+  /// Bouton espace agent
   Widget _construireBoutonAgent(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -277,7 +306,10 @@ class AccueilPage extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1.5),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.25),
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
@@ -287,7 +319,11 @@ class AccueilPage extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.shield_rounded, color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.shield_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -304,12 +340,19 @@ class AccueilPage extends StatelessWidget {
                   ),
                   Text(
                     'Gestion et traitement des dossiers',
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 12),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white38, size: 16),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white38,
+              size: 16,
+            ),
           ],
         ),
       ),

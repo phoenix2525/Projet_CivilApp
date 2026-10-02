@@ -1,13 +1,15 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'models/document.dart';
 import 'details_document_page.dart';
 import 'mes_demandes_page.dart';
 import 'tableau_de_bord_citoyen_page.dart';
 
 /// Page catalogue des actes d'état civil disponibles.
-/// Design glassmorphism sur fond dégradé, recherche en temps réel.
+
 class CataloguePage extends StatefulWidget {
   const CataloguePage({super.key});
 
@@ -24,7 +26,9 @@ class _CataloguePageState extends State<CataloguePage> {
 
     // Filtrage en temps réel selon la saisie
     final documentsFiltres = documentsDisponibles
-        .where((doc) => doc.titre.toLowerCase().contains(_recherche.toLowerCase()))
+        .where(
+          (doc) => doc.titre.toLowerCase().contains(_recherche.toLowerCase()),
+        )
         .toList();
 
     return Scaffold(
@@ -90,10 +94,15 @@ class _CataloguePageState extends State<CataloguePage> {
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                           itemCount: documentsFiltres.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 14),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 14),
                           itemBuilder: (context, index) {
                             final doc = documentsFiltres[index];
-                            return _construireCarteDocument(context, doc, colorScheme);
+                            return _construireCarteDocument(
+                              context,
+                              doc,
+                              colorScheme,
+                            );
                           },
                         ),
                 ),
@@ -116,15 +125,27 @@ class _CataloguePageState extends State<CataloguePage> {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.25),
+              width: 1,
+            ),
           ),
           child: TextField(
             onChanged: (val) => setState(() => _recherche = val),
-            style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 15),
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white,
+              fontSize: 15,
+            ),
             decoration: InputDecoration(
               hintText: 'Rechercher un acte...',
-              hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 14),
-              prefixIcon: const Icon(Icons.search_rounded, color: Colors.white60),
+              hintStyle: GoogleFonts.plusJakartaSans(
+                color: Colors.white54,
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: Colors.white60,
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -138,13 +159,19 @@ class _CataloguePageState extends State<CataloguePage> {
     );
   }
 
-  /// Carte d'un document avec image Hero et infos pratiques
-  Widget _construireCarteDocument(BuildContext context, Document doc, ColorScheme colorScheme) {
+  /// Carte d'un document
+  Widget _construireCarteDocument(
+    BuildContext context,
+    Document doc,
+    ColorScheme colorScheme,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailsDocumentPage(document: doc)),
+          MaterialPageRoute(
+            builder: (context) => DetailsDocumentPage(document: doc),
+          ),
         );
       },
       child: Container(
@@ -165,7 +192,9 @@ class _CataloguePageState extends State<CataloguePage> {
             Hero(
               tag: 'doc_icon_${doc.id}',
               child: ClipRRect(
-                borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(18),
+                ),
                 child: Image.asset(
                   doc.imagePath,
                   width: 90,
@@ -176,7 +205,9 @@ class _CataloguePageState extends State<CataloguePage> {
                     height: 100,
                     decoration: BoxDecoration(
                       color: doc.couleur.withValues(alpha: 0.15),
-                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                      borderRadius: const BorderRadius.horizontal(
+                        left: Radius.circular(18),
+                      ),
                     ),
                     child: Icon(doc.icon, color: doc.couleur, size: 36),
                   ),
@@ -187,13 +218,19 @@ class _CataloguePageState extends State<CataloguePage> {
             // Contenu texte
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Badge catégorie
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: doc.couleur.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
@@ -232,9 +269,17 @@ class _CataloguePageState extends State<CataloguePage> {
                     // Délai et frais
                     Row(
                       children: [
-                        _construireMiniTag(Icons.schedule_rounded, doc.delai, const Color(0xFFF57C00)),
+                        _construireMiniTag(
+                          Icons.schedule_rounded,
+                          doc.delai,
+                          const Color(0xFFF57C00),
+                        ),
                         const SizedBox(width: 8),
-                        _construireMiniTag(Icons.payments_rounded, doc.frais, const Color(0xFF0A6640)),
+                        _construireMiniTag(
+                          Icons.payments_rounded,
+                          doc.frais,
+                          const Color(0xFF0A6640),
+                        ),
                       ],
                     ),
                   ],
@@ -244,7 +289,11 @@ class _CataloguePageState extends State<CataloguePage> {
 
             const Padding(
               padding: EdgeInsets.only(right: 14),
-              child: Icon(Icons.chevron_right_rounded, color: Color(0xFFCDD8D3), size: 22),
+              child: Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFFCDD8D3),
+                size: 22,
+              ),
             ),
           ],
         ),
@@ -280,7 +329,10 @@ class _CataloguePageState extends State<CataloguePage> {
           const SizedBox(height: 16),
           Text(
             'Aucun document trouvé',
-            style: GoogleFonts.hankenGrotesk(fontSize: 16, color: Colors.grey.shade500),
+            style: GoogleFonts.hankenGrotesk(
+              fontSize: 16,
+              color: Colors.grey.shade500,
+            ),
           ),
         ],
       ),
@@ -300,18 +352,32 @@ class _CataloguePageState extends State<CataloguePage> {
         elevation: 0,
         selectedItemColor: colorScheme.primary,
         unselectedItemColor: const Color(0xFF9EADA8),
-        selectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 12),
+        selectedLabelStyle: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
         unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 12),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'Catalogue'),
-          BottomNavigationBarItem(icon: Icon(Icons.folder_rounded), label: 'Mes Dossiers'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.grid_view_rounded),
+            label: 'Catalogue',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.folder_rounded),
+            label: 'Mes Dossiers',
+          ),
         ],
         onTap: (index) {
           if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+              MaterialPageRoute(
+                builder: (context) => const TableauDeBordCitoyenPage(),
+              ),
             );
           } else if (index == 2) {
             Navigator.pushReplacement(

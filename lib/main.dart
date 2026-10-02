@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'accueil_page.dart';
-import 'services/firebase_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseService.initialiser();
+void main() {
   runApp(const MyApp());
 }
 
@@ -24,7 +21,7 @@ class MyApp extends StatelessWidget {
   }
 
   /// Thème global de l'application — style moderne 2024/2025
-  /// Inspiré des apps gouvernementales scandinaves et de Material 3
+  
   ThemeData _construireTheme() {
     // Palette principale : vert émeraude profond
     const couleurPrimaire = Color(0xFF0A6640);

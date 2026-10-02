@@ -3,11 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'tableau_de_bord_citoyen_page.dart';
 import 'models/citoyen.dart';
 import 'models/demande.dart';
-import 'services/firebase_service.dart';
 
-/// Page d'authentification et de profil citoyen.
-/// Supporte l'inscription et la connexion réelles avec Firebase Auth & Firestore,
-/// tout en intégrant un mode démo pour les évaluations rapides.
+/// Page d'inscription et de connexion du citoyen.
+/// Les profils sont enregistrés dans la base simulée (en mémoire),
+/// avec un mode démo rapide pour les présentations en classe.
 class CreerProfilPage extends StatefulWidget {
   const CreerProfilPage({super.key});
 
@@ -18,15 +17,12 @@ class CreerProfilPage extends StatefulWidget {
 class _CreerProfilPageState extends State<CreerProfilPage> {
   final _formKey = GlobalKey<FormState>();
   bool _estModeConnexion = false; // false = Inscription, true = Connexion
-  bool _chargement = false;
-  bool _motDePasseVisible = false;
   bool _acceptConditions = false;
 
   final TextEditingController _prenomController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _telephoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _motDePasseController = TextEditingController();
   final TextEditingController _adresseController = TextEditingController();
 
   @override
@@ -35,13 +31,12 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
     _nomController.dispose();
     _telephoneController.dispose();
     _emailController.dispose();
-    _motDePasseController.dispose();
     _adresseController.dispose();
     super.dispose();
   }
 
-  /// Traite la soumission selon le mode (Connexion ou Inscription)
-  Future<void> _soumettre() async {
+  /// Traite la soumission selon le mode (Inscription ou Connexion)
+  void _soumettre() {
     if (!_formKey.currentState!.validate()) return;
 
     if (!_estModeConnexion && !_acceptConditions) {
@@ -49,57 +44,51 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
       return;
     }
 
-    setState(() => _chargement = true);
+    final emailSaisi = _emailController.text.trim();
 
-    try {
-      if (_estModeConnexion) {
-        // --- Connexion Firebase Auth ---
-        await FirebaseService.connecterCitoyen(
-          email: _emailController.text.trim(),
-          password: _motDePasseController.text,
-        );
-        _afficherMessage('Connexion réussie ! Heureux de vous revoir.');
-      } else {
-        // --- Inscription Firebase Auth & Firestore ---
-        await FirebaseService.inscrireCitoyen(
-          email: _emailController.text.trim(),
-          password: _motDePasseController.text,
-          prenom: _prenomController.text.trim(),
-          nom: _nomController.text.trim(),
-          telephone: _telephoneController.text.trim(),
-          adresse: _adresseController.text.trim(),
-        );
-        _afficherMessage('Compte citoyen créé avec succès sur Firebase !');
+    if (_estModeConnexion) {
+      // --- Connexion : on retrouve le profil enregistré avec cet email ---
+      Citoyen? profilTrouve;
+      for (final profil in DatabaseSimulee.citoyensInscrits) {
+        if (profil.email == emailSaisi) {
+          profilTrouve = profil;
+          break;
+        }
       }
 
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
-        );
-      }
-    } catch (e) {
-      String message = 'Une erreur est survenue lors de l\'authentification.';
-      final erreurTexte = e.toString().toLowerCase();
-
-      if (erreurTexte.contains('email-already-in-use')) {
-        message = 'Cette adresse e-mail possède déjà un compte. Veuillez vous connecter.';
-      } else if (erreurTexte.contains('user-not-found') || erreurTexte.contains('wrong-password') || erreurTexte.contains('invalid-credential')) {
-        message = 'Identifiants incorrects. Vérifiez l\'email et le mot de passe.';
-      } else if (erreurTexte.contains('weak-password')) {
-        message = 'Le mot de passe doit comporter au moins 6 caractères.';
-      } else if (erreurTexte.contains('invalid-email')) {
-        message = 'Format d\'adresse email invalide.';
-      } else if (erreurTexte.contains('network-request-failed')) {
-        message = 'Connexion réseau impossible. Vérifiez votre accès Internet.';
+      if (profilTrouve == null) {
+        _afficherMessage('Aucun compte trouvé avec cet email. Créez d\'abord votre profil.', estErreur: true);
+        return;
       }
 
-      _afficherMessage(message, estErreur: true);
-    } finally {
-      if (mounted) {
-        setState(() => _chargement = false);
+      DatabaseSimulee.citoyenConnecte = profilTrouve;
+      _afficherMessage('Connexion réussie ! Heureux de vous revoir.');
+    } else {
+      // --- Inscription : enregistrement du profil dans la base simulée ---
+
+      // Un même email ne peut pas servir à deux comptes différents
+      final emailDejaUtilise = DatabaseSimulee.citoyensInscrits.any((profil) => profil.email == emailSaisi);
+      if (emailDejaUtilise) {
+        _afficherMessage('Cette adresse email possède déjà un compte. Veuillez vous connecter.', estErreur: true);
+        return;
       }
+
+      final nouveauCitoyen = Citoyen(
+        prenom: _prenomController.text.trim(),
+        nom: _nomController.text.trim(),
+        telephone: _telephoneController.text.trim(),
+        email: emailSaisi,
+        adresse: _adresseController.text.trim(),
+      );
+      DatabaseSimulee.citoyensInscrits.add(nouveauCitoyen);
+      DatabaseSimulee.citoyenConnecte = nouveauCitoyen;
+      _afficherMessage('Compte citoyen créé avec succès !');
     }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
+    );
   }
 
   /// Démo rapide sans mot de passe pour présentation en classe
@@ -205,13 +194,13 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
                             Row(
                               children: [
                                 Icon(
-                                  FirebaseService.estDisponible ? Icons.cloud_done : Icons.cloud_off,
+                                  Icons.verified_user_rounded,
                                   size: 13,
-                                  color: FirebaseService.estDisponible ? Colors.greenAccent : Colors.orangeAccent,
+                                  color: Colors.white70,
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  FirebaseService.estDisponible ? 'Connecté à Firebase Cloud' : 'Mode Local / Démo',
+                                  'Vos informations restent enregistrées sur cet appareil',
                                   style: GoogleFonts.plusJakartaSans(
                                     color: Colors.white70,
                                     fontSize: 12,
@@ -282,9 +271,6 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
                             ),
                             const SizedBox(height: 14),
 
-                            // Mot de passe
-                            _champMotDePasse(),
-                            const SizedBox(height: 14),
 
                             if (!_estModeConnexion) ...[
                               // Adresse
@@ -321,26 +307,20 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
                               width: double.infinity,
                               height: 52,
                               child: ElevatedButton(
-                                onPressed: _chargement ? null : _soumettre,
+                                onPressed: _soumettre,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF0A6640),
                                   foregroundColor: Colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                                 ),
-                                child: _chargement
-                                    ? const SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                                      )
-                                    : Text(
-                                        _estModeConnexion ? 'Se connecter' : 'Créer mon compte officiel',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                child: Text(
+                                  _estModeConnexion ? 'Se connecter' : 'Créer mon compte officiel',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
 
@@ -437,42 +417,6 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
           ),
         ],
       ),
-    );
-  }
-
-  /// Champ mot de passe avec affichage/masquage
-  Widget _champMotDePasse() {
-    return TextFormField(
-      controller: _motDePasseController,
-      obscureText: !_motDePasseVisible,
-      decoration: InputDecoration(
-        labelText: 'Mot de passe',
-        prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: Color(0xFF0A6640)),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _motDePasseVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            size: 20,
-            color: Colors.grey.shade600,
-          ),
-          onPressed: () => setState(() => _motDePasseVisible = !_motDePasseVisible),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFF7FAF8),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF0A6640), width: 1.5),
-        ),
-      ),
-      validator: (val) {
-        if (val == null || val.trim().isEmpty) return 'Le mot de passe est obligatoire.';
-        if (val.trim().length < 6) return 'Minimum 6 caractères.';
-        return null;
-      },
     );
   }
 

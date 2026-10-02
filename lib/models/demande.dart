@@ -30,46 +30,6 @@ class Demande {
     this.noteAgent = '',
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'documentId': document.id,
-      'documentTitre': document.titre,
-      'citoyen': citoyen.toMap(),
-      'dateDemande': dateDemande.toIso8601String(),
-      'statut': statut,
-      'donneesFormulaire': donneesFormulaire,
-      'piecesFournies': piecesFournies,
-      'noteAgent': noteAgent,
-    };
-  }
-
-  factory Demande.fromMap(Map<String, dynamic> map, String id) {
-    final docId = map['documentId'] ?? '';
-    final doc = documentsDisponibles.firstWhere(
-      (d) => d.id == docId,
-      orElse: () => documentsDisponibles.first,
-    );
-
-    final citoyenData = map['citoyen'] is Map
-        ? Map<String, dynamic>.from(map['citoyen'])
-        : <String, dynamic>{};
-
-    return Demande(
-      id: id,
-      document: doc,
-      citoyen: Citoyen.fromMap(citoyenData, id: citoyenData['id']),
-      dateDemande: DateTime.tryParse(map['dateDemande'] ?? '') ?? DateTime.now(),
-      statut: map['statut'] ?? 'reçue',
-      donneesFormulaire: Map<String, String>.from(
-        (map['donneesFormulaire'] as Map?)?.map((k, v) => MapEntry(k.toString(), v.toString())) ?? {},
-      ),
-      piecesFournies: Map<String, String>.from(
-        (map['piecesFournies'] as Map?)?.map((k, v) => MapEntry(k.toString(), v.toString())) ?? {},
-      ),
-      noteAgent: map['noteAgent'] ?? '',
-    );
-  }
 }
 
 /// Classe utilitaire (Singleton) simulant la base de données locale en mémoire.
@@ -80,6 +40,9 @@ class DatabaseSimulee {
 
   // L'agent de mairie actuellement connecté
   static Agent? agentConnecte;
+
+  // Profils citoyens enregistrés (permet la re-connexion avec l'email)
+  static final List<Citoyen> citoyensInscrits = [];
   
   // Liste des demandes enregistrées (avec des données exemples pour la démonstration)
   static final List<Demande> demandes = [
@@ -178,7 +141,7 @@ class DatabaseSimulee {
     ),
   ];
 
-  // Notifications simulées destinées aux citoyens
+  // Notification simulées destinées aux citoyens
   static final List<Map<String, dynamic>> notifications = [
     {
       'message': 'Votre demande d\'acte de naissance pour Mariama Fall est prête pour retrait.',

@@ -1,30 +1,18 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Test de base de l'application.
+// Vérifie que l'écran d'accueil se lance bien et propose les deux espaces.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:civil_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets("L'écran d'accueil s'affiche au lancement", (WidgetTester tester) async {
+    // Construction de l'application et déclenchement d'une frame
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // L'accueil doit afficher le nom de l'application et les deux espaces
+    expect(find.text('CivilApp'), findsOneWidget);
+    expect(find.text('Espace Citoyen'), findsOneWidget);
+    expect(find.text('Espace Agent Mairie'), findsOneWidget);
   });
 }
