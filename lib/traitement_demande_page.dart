@@ -203,9 +203,13 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
                           children: [
                             Icon(Icons.verified, color: colorScheme.primary, size: 14),
                             const SizedBox(width: 4),
-                            Text(
-                              'Demandeur Enregistré',
-                              style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
+                            Flexible(
+                              child: Text(
+                                'Demandeur Enregistré',
+                                style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
@@ -241,7 +245,12 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
               children: [
                 Icon(widget.demande.document.icon, color: widget.demande.document.couleur),
                 const SizedBox(width: 8),
-                Text('Données du Formulaire de Demande', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    'Données du Formulaire de Demande',
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -301,7 +310,12 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
               children: [
                 Icon(Icons.checklist, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Pièces Justificatives Vérifiées', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    'Pièces Justificatives Vérifiées',
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
@@ -370,6 +384,7 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
             Text('Gestion du Statut & Notification', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               initialValue: _statutActuel,
               decoration: const InputDecoration(
                 labelText: 'Statut de traitement',
@@ -416,7 +431,12 @@ class _TraitementDemandePageState extends State<TraitementDemandePage> {
               children: [
                 Icon(Icons.edit_note, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 8),
-                Text('Notes internes Mairie (Agent)', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    'Notes internes Mairie (Agent)',
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),

@@ -40,14 +40,19 @@ class DetailsDemandeCitoyenPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'RÉF. $numeroDossier',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
+                        Expanded(
+                          child: Text(
+                            'RÉF. $numeroDossier',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         _construireBadgeStatut(demande.statut),
                       ],
                     ),
@@ -61,9 +66,13 @@ class DetailsDemandeCitoyenPage extends StatelessWidget {
                       children: [
                         Icon(Icons.calendar_today_outlined, size: 14, color: colorScheme.onSurfaceVariant),
                         const SizedBox(width: 6),
-                        Text(
-                          'Soumise le $dateTexte',
-                          style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                        Expanded(
+                          child: Text(
+                            'Soumise le $dateTexte',
+                            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -90,11 +99,15 @@ class DetailsDemandeCitoyenPage extends StatelessWidget {
                       children: [
                         Icon(Icons.mark_chat_unread_rounded, color: Colors.amber.shade900, size: 20),
                         const SizedBox(width: 8),
-                        Text(
-                          'Message de l\'officier d\'état civil',
-                          style: textTheme.titleSmall?.copyWith(
-                            color: Colors.amber.shade900,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            'Message de l\'officier d\'état civil',
+                            style: textTheme.titleSmall?.copyWith(
+                              color: Colors.amber.shade900,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

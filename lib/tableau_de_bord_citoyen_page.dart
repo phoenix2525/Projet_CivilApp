@@ -52,7 +52,7 @@ class _TableauDeBordCitoyenPageState extends State<TableauDeBordCitoyenPage> {
             automaticallyImplyLeading: false,
             backgroundColor: const Color(0xFF0A6640),
             flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
+              collapseMode: CollapseMode.parallax,
               background: _construireHeader(initiales, citoyen.prenom, citoyen.nom, totalDemandes),
             ),
             title: Text(
@@ -142,40 +142,43 @@ class _TableauDeBordCitoyenPageState extends State<TableauDeBordCitoyenPage> {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
-          child: Row(
-            children: [
-              // Avatar citoyen
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.15),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-                ),
-                child: Center(
-                  child: Text(
-                    initiales,
-                    style: GoogleFonts.hankenGrotesk(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+        bottom: false,
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Row(
+              children: [
+                // Avatar citoyen
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.15),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      initiales,
+                      style: GoogleFonts.hankenGrotesk(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Bonjour,',
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white60, fontSize: 13),
-                    ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Bonjour,',
+                        style: GoogleFonts.plusJakartaSans(color: Colors.white60, fontSize: 13),
+                      ),
                     Text(
                       '$prenom $nom',
                       style: GoogleFonts.hankenGrotesk(
@@ -204,8 +207,9 @@ class _TableauDeBordCitoyenPageState extends State<TableauDeBordCitoyenPage> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// Titre de section sobre
   Widget _construireTitreSection(String titre) {

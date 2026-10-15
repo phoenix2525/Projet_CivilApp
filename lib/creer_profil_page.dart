@@ -193,17 +193,21 @@ class _CreerProfilPageState extends State<CreerProfilPage> {
                             ),
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.verified_user_rounded,
                                   size: 13,
                                   color: Colors.white70,
                                 ),
                                 const SizedBox(width: 5),
-                                Text(
-                                  'Vos informations restent enregistrées sur cet appareil',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: Colors.white70,
-                                    fontSize: 12,
+                                Expanded(
+                                  child: Text(
+                                    'Vos informations restent enregistrées sur cet appareil',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white70,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],

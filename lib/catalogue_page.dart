@@ -267,14 +267,15 @@ class _CataloguePageState extends State<CataloguePage> {
                     ),
                     const SizedBox(height: 8),
                     // Délai et frais
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
                       children: [
                         _construireMiniTag(
                           Icons.schedule_rounded,
                           doc.delai,
                           const Color(0xFFF57C00),
                         ),
-                        const SizedBox(width: 8),
                         _construireMiniTag(
                           Icons.payments_rounded,
                           doc.frais,

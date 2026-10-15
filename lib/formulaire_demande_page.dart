@@ -461,6 +461,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _sexeTitulaire,
                 decoration: const InputDecoration(labelText: 'Sexe *', border: OutlineInputBorder()),
                 items: const [
@@ -594,6 +595,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _sexeTitulaire,
                 decoration: const InputDecoration(labelText: 'Sexe *', border: OutlineInputBorder()),
                 items: const [
@@ -796,17 +798,18 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
+          isExpanded: true,
           initialValue: _regimeMatrimonial,
           decoration: const InputDecoration(
             labelText: 'Régime Matrimonial *',
             border: OutlineInputBorder(),
           ),
           items: const [
-            DropdownMenuItem(value: 'Monogamie - Séparation de biens', child: Text('Monogamie - Séparation de biens')),
-            DropdownMenuItem(value: 'Monogamie - Communauté de biens', child: Text('Monogamie - Communauté de biens')),
-            DropdownMenuItem(value: 'Polygamie (Limitée à 2 femmes)', child: Text('Polygamie (Limitée à 2 femmes)')),
-            DropdownMenuItem(value: 'Polygamie (Limitée à 3 femmes)', child: Text('Polygamie (Limitée à 3 femmes)')),
-            DropdownMenuItem(value: 'Polygamie (Limitée à 4 femmes)', child: Text('Polygamie (Limitée à 4 femmes)')),
+            DropdownMenuItem(value: 'Monogamie - Séparation de biens', child: Text('Monogamie - Séparation de biens', overflow: TextOverflow.ellipsis)),
+            DropdownMenuItem(value: 'Monogamie - Communauté de biens', child: Text('Monogamie - Communauté de biens', overflow: TextOverflow.ellipsis)),
+            DropdownMenuItem(value: 'Polygamie (Limitée à 2 femmes)', child: Text('Polygamie (Limitée à 2 femmes)', overflow: TextOverflow.ellipsis)),
+            DropdownMenuItem(value: 'Polygamie (Limitée à 3 femmes)', child: Text('Polygamie (Limitée à 3 femmes)', overflow: TextOverflow.ellipsis)),
+            DropdownMenuItem(value: 'Polygamie (Limitée à 4 femmes)', child: Text('Polygamie (Limitée à 4 femmes)', overflow: TextOverflow.ellipsis)),
           ],
           onChanged: (v) => setState(() => _regimeMatrimonial = v!),
         ),
@@ -913,6 +916,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _lienParenteDeclarant,
                 decoration: const InputDecoration(
                   labelText: 'Lien de Parenté *',

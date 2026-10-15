@@ -79,6 +79,43 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
     }
   }
 
+  /// Démo rapide sans mot de passe pour test ou évaluation
+  void _connexionRapideDemoAgent() {
+    DatabaseSimulee.agentConnecte = Agent(
+      prenom: _prenomController.text.trim().isNotEmpty
+          ? _prenomController.text.trim()
+          : 'Aminata',
+      nom: _nomController.text.trim().isNotEmpty
+          ? _nomController.text.trim()
+          : 'Fall',
+      matricule: _matriculeController.text.trim().isNotEmpty
+          ? _matriculeController.text.trim()
+          : 'AGT-2024-001',
+      role: _roleSelectionne ?? "Officier d'État Civil",
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle_outline, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(child: Text('Connecté en mode Démo rapide.')),
+          ],
+        ),
+        backgroundColor: const Color(0xFF0A6640),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const GestionDemandesPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -146,25 +183,31 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Espace Agent',
-                            style: GoogleFonts.hankenGrotesk(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 22,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Espace Agent',
+                              style: GoogleFonts.hankenGrotesk(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 22,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            'Accès réservé au personnel municipal',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white54,
-                              fontSize: 12,
+                            Text(
+                              'Accès réservé au personnel municipal',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white54,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -245,6 +288,7 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
 
                             // Sélection du rôle
                             DropdownButtonFormField<String>(
+                              isExpanded: true,
                               decoration: InputDecoration(
                                 labelText: 'Rôle dans la mairie',
                                 prefixIcon: const Icon(
@@ -258,7 +302,10 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                               items: _roles.map((role) {
                                 return DropdownMenuItem(
                                   value: role,
-                                  child: Text(role),
+                                  child: Text(
+                                    role,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (val) {
@@ -325,6 +372,24 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
                                 ),
                               ),
                             ),
+
+                            const SizedBox(height: 16),
+
+                            // Option Démo rapide
+                            Center(
+                              child: TextButton.icon(
+                                onPressed: _connexionRapideDemoAgent,
+                                icon: const Icon(Icons.flash_on, size: 16, color: Color(0xFF0A6640)),
+                                label: Text(
+                                  'Accès démo rapide (sans mot de passe)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    color: const Color(0xFF0A6640),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -348,7 +413,6 @@ class _ConnexionAgentPageState extends State<ConnexionAgentPage> {
         prefixIcon: Icon(icone),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      validator: (v) => v!.isEmpty ? 'Requis' : null,
     );
   }
 }

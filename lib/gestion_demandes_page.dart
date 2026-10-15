@@ -96,7 +96,7 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
+              collapseMode: CollapseMode.parallax,
               background: _construireHeaderAgent(agent),
             ),
             title: Text(
@@ -158,46 +158,56 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 52, 20, 16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+        bottom: false,
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.shield_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.shield_rounded,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 14),
-              if (agent != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${agent.prenom} ${agent.nom}',
-                      style: GoogleFonts.hankenGrotesk(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
+                const SizedBox(width: 14),
+                if (agent != null)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${agent.prenom} ${agent.nom}',
+                          style: GoogleFonts.hankenGrotesk(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          '${agent.role} • ${agent.matricule}',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white60,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${agent.role} • ${agent.matricule}',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white60,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -234,39 +244,152 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
     );
   }
 
-  /// Filtres de statut sous forme de chips
+  /// Filtres de statut modernes, très visibles et contrastés
   Widget _construireFiltresStatut(ColorScheme colorScheme) {
+    final int total = DatabaseSimulee.demandes.length;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
         children: [
-          // Chip "Tous"
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: const Text('Tous'),
-              selected: _filtreStatut == null,
-              selectedColor: colorScheme.primary.withValues(alpha: 0.15),
-              checkmarkColor: colorScheme.primary,
-              onSelected: (_) => setState(() => _filtreStatut = null),
-            ),
+          // Bouton "Tous"
+          _boutonFiltre(
+            label: 'Tous',
+            count: total,
+            estSelectionne: _filtreStatut == null,
+            couleurTheme: const Color(0xFF0A6640),
+            onTap: () => setState(() => _filtreStatut = null),
           ),
-          // Chips par statut
+          // Boutons par statut
           ..._statuts.map((statut) {
             final couleur = _couleurStatut(statut);
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: FilterChip(
-                label: Text(statut[0].toUpperCase() + statut.substring(1)),
-                selected: _filtreStatut == statut,
-                selectedColor: couleur.withValues(alpha: 0.15),
-                checkmarkColor: couleur,
-                onSelected: (selected) =>
-                    setState(() => _filtreStatut = selected ? statut : null),
-              ),
+            final int count = DatabaseSimulee.demandes
+                .where((d) => d.statut == statut)
+                .length;
+            final String labelAffiche;
+            switch (statut) {
+              case 'reçue':
+                labelAffiche = 'Reçues';
+                break;
+              case 'en cours':
+                labelAffiche = 'En cours';
+                break;
+              case 'prête':
+                labelAffiche = 'Prêtes';
+                break;
+              case 'livrée':
+                labelAffiche = 'Livrées';
+                break;
+              default:
+                labelAffiche = statut[0].toUpperCase() + statut.substring(1);
+            }
+            return _boutonFiltre(
+              label: labelAffiche,
+              count: count,
+              estSelectionne: _filtreStatut == statut,
+              couleurTheme: couleur,
+              onTap: () => setState(() {
+                _filtreStatut = _filtreStatut == statut ? null : statut;
+              }),
             );
           }),
         ],
+      ),
+    );
+  }
+
+  /// Bouton de filtre personnalisé avec contraste renforcé pour visibilité optimale
+  Widget _boutonFiltre({
+    required String label,
+    required int count,
+    required bool estSelectionne,
+    required Color couleurTheme,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: estSelectionne
+                  ? couleurTheme
+                  : couleurTheme.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: estSelectionne
+                    ? couleurTheme
+                    : couleurTheme.withValues(alpha: 0.40),
+                width: estSelectionne ? 2.0 : 1.5,
+              ),
+              boxShadow: [
+                if (estSelectionne)
+                  BoxShadow(
+                    color: couleurTheme.withValues(alpha: 0.35),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  )
+                else
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (estSelectionne) ...[
+                  const Icon(Icons.check_rounded, color: Colors.white, size: 16),
+                  const SizedBox(width: 6),
+                ] else ...[
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: couleurTheme,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  label,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: estSelectionne ? Colors.white : couleurTheme,
+                    fontWeight: estSelectionne ? FontWeight.w800 : FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: estSelectionne
+                        ? Colors.white.withValues(alpha: 0.25)
+                        : couleurTheme.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$count',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: estSelectionne ? Colors.white : couleurTheme,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -356,7 +479,10 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
                           // Badge statut
                           Container(
@@ -381,7 +507,6 @@ class _GestionDemandesPageState extends State<GestionDemandesPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Text(
                             '$dateFormatee • $reference',
                             style: GoogleFonts.plusJakartaSans(

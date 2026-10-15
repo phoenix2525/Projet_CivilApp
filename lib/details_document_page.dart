@@ -113,10 +113,11 @@ class DetailsDocumentPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Badges délai et frais
-                  Row(
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 8,
                     children: [
                       _construireBadge(Icons.schedule_rounded, document.delai, const Color(0xFFF57C00)),
-                      const SizedBox(width: 10),
                       _construireBadge(Icons.payments_rounded, document.frais, const Color(0xFF0A6640)),
                     ],
                   ),
