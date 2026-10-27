@@ -1,15 +1,14 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'app_theme.dart';
 import 'models/document.dart';
 import 'details_document_page.dart';
 import 'mes_demandes_page.dart';
 import 'tableau_de_bord_citoyen_page.dart';
 
 /// Page catalogue des actes d'état civil disponibles.
-
+/// Interface administrative sobre et structurée en fiches distinctes.
 class CataloguePage extends StatefulWidget {
   const CataloguePage({super.key});
 
@@ -22,8 +21,6 @@ class _CataloguePageState extends State<CataloguePage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     // Filtrage en temps réel selon la saisie
     final documentsFiltres = documentsDisponibles
         .where(
@@ -32,140 +29,102 @@ class _CataloguePageState extends State<CataloguePage> {
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6F4),
-      body: Stack(
-        children: [
-          // Fond décoratif en haut
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 220,
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF062917), Color(0xFF0A6640)],
-                ),
+      backgroundColor: Palette.fond,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Bandeau supérieur sobre
+            Container(
+              color: Palette.primaire,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Catalogue',
+                    style: GoogleFonts.publicSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Sélectionnez un acte officiel pour formuler une demande.',
+                    style: GoogleFonts.publicSans(
+                      fontSize: 12,
+                      color: Palette.texteSurSombreMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Barre de recherche sobre et nette
+                  _construireBarreRecherche(),
+                ],
               ),
             ),
-          ),
 
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // En-tête avec titre et description
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Catalogue',
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Sélectionnez un acte pour démarrer votre demande.',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          color: Colors.white60,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Barre de recherche glassmorphism
-                      _construireBarreRecherche(),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-
-                // Liste des documents
-                Expanded(
-                  child: documentsFiltres.isEmpty
-                      ? _construireEtatVide()
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                          itemCount: documentsFiltres.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 14),
-                          itemBuilder: (context, index) {
-                            final doc = documentsFiltres[index];
-                            return _construireCarteDocument(
-                              context,
-                              doc,
-                              colorScheme,
-                            );
-                          },
-                        ),
-                ),
-              ],
+            // Liste des documents
+            Expanded(
+              child: documentsFiltres.isEmpty
+                  ? _construireEtatVide()
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: documentsFiltres.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final doc = documentsFiltres[index];
+                        return _construireCarteDocument(context, doc);
+                      },
+                    ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      bottomNavigationBar: _construireBottomNav(colorScheme),
+      bottomNavigationBar: _construireBottomNav(),
     );
   }
 
-  /// Barre de recherche avec effet verre sur fond sombre
+  /// Barre de recherche administrative nette
   Widget _construireBarreRecherche() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-              width: 1,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Palette.bordure, width: 1),
+      ),
+      child: TextField(
+        onChanged: (val) => setState(() => _recherche = val),
+        style: GoogleFonts.publicSans(
+          color: Palette.textePrimaire,
+          fontSize: 13,
+        ),
+        decoration: InputDecoration(
+          hintText: 'Rechercher un acte (naissance, mariage...)',
+          hintStyle: GoogleFonts.publicSans(
+            color: Palette.texteDiscret,
+            fontSize: 13,
           ),
-          child: TextField(
-            onChanged: (val) => setState(() => _recherche = val),
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white,
-              fontSize: 15,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Rechercher un acte...',
-              hintStyle: GoogleFonts.plusJakartaSans(
-                color: Colors.white54,
-                fontSize: 14,
-              ),
-              prefixIcon: const Icon(
-                Icons.search_rounded,
-                color: Colors.white60,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              fillColor: Colors.transparent,
-              filled: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: Palette.texteSecondaire,
+            size: 20,
           ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          fillColor: Colors.transparent,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         ),
       ),
     );
   }
 
-  /// Carte d'un document
-  Widget _construireCarteDocument(
-    BuildContext context,
-    Document doc,
-    ColorScheme colorScheme,
-  ) {
-    return GestureDetector(
+  /// Fiche d'un acte officiel avec bordure fine et détails lisibles
+  Widget _construireCarteDocument(BuildContext context, Document doc) {
+    return InkWell(
       onTap: () {
         Navigator.push(
           context,
@@ -174,113 +133,66 @@ class _CataloguePageState extends State<CataloguePage> {
           ),
         );
       },
+      borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: Palette.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Palette.bordure, width: 1),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Hero du document
-            Hero(
-              tag: 'doc_icon_${doc.id}',
-              child: ClipRRect(
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(18),
-                ),
+            // Vignette image
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(7)),
+              child: SizedBox(
+                width: 86,
+                height: 100,
                 child: Image.asset(
                   doc.imagePath,
-                  width: 90,
-                  height: 100,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    width: 90,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: doc.couleur.withValues(alpha: 0.15),
-                      borderRadius: const BorderRadius.horizontal(
-                        left: Radius.circular(18),
-                      ),
-                    ),
-                    child: Icon(doc.icon, color: doc.couleur, size: 36),
+                    color: Palette.surfaceSecondaire,
+                    child: Icon(doc.icon, color: doc.couleur, size: 30),
                   ),
                 ),
               ),
             ),
 
-            // Contenu texte
+            // Contenu informatif
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Badge catégorie
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: doc.couleur.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'ÉTAT CIVIL',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: doc.couleur,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
                     Text(
                       doc.titre,
-                      style: GoogleFonts.hankenGrotesk(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: const Color(0xFF1A2E26),
+                      style: GoogleFonts.publicSans(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: Palette.textePrimaire,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       doc.description,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                        height: 1.4,
+                      style: GoogleFonts.publicSans(
+                        fontSize: 11,
+                        color: Palette.texteSecondaire,
+                        height: 1.35,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    // Délai et frais
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
                       children: [
-                        _construireMiniTag(
-                          Icons.schedule_rounded,
-                          doc.delai,
-                          const Color(0xFFF57C00),
-                        ),
-                        _construireMiniTag(
-                          Icons.payments_rounded,
-                          doc.frais,
-                          const Color(0xFF0A6640),
-                        ),
+                        _construireTagDelai(doc.delai),
+                        _construireTagFrais(doc.frais),
                       ],
                     ),
                   ],
@@ -289,11 +201,11 @@ class _CataloguePageState extends State<CataloguePage> {
             ),
 
             const Padding(
-              padding: EdgeInsets.only(right: 14),
+              padding: EdgeInsets.only(top: 38, right: 12),
               child: Icon(
                 Icons.chevron_right_rounded,
-                color: Color(0xFFCDD8D3),
-                size: 22,
+                color: Palette.texteDiscret,
+                size: 20,
               ),
             ),
           ],
@@ -302,37 +214,55 @@ class _CataloguePageState extends State<CataloguePage> {
     );
   }
 
-  /// Mini tag délai / frais
-  Widget _construireMiniTag(IconData icone, String texte, Color couleur) {
+  Widget _construireTagDelai(String delai) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icone, size: 12, color: couleur),
+        const Icon(Icons.schedule, size: 12, color: Palette.texteSecondaire),
         const SizedBox(width: 3),
         Text(
-          texte,
-          style: GoogleFonts.plusJakartaSans(
+          delai,
+          style: GoogleFonts.publicSans(
             fontSize: 11,
-            color: couleur,
-            fontWeight: FontWeight.w600,
+            color: Palette.texteSecondaire,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
 
-  /// Écran vide si aucun document ne correspond à la recherche
+  Widget _construireTagFrais(String frais) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Palette.surfaceSecondaire,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        frais,
+        style: GoogleFonts.publicSans(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: Palette.textePrimaire,
+        ),
+      ),
+    );
+  }
+
+  /// Écran vide sobre
   Widget _construireEtatVide() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off_rounded, size: 64, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
+          const Icon(Icons.search_off_rounded, size: 48, color: Palette.texteDiscret),
+          const SizedBox(height: 12),
           Text(
-            'Aucun document trouvé',
-            style: GoogleFonts.hankenGrotesk(
-              fontSize: 16,
-              color: Colors.grey.shade500,
+            'Aucun document ne correspond à la recherche.',
+            style: GoogleFonts.publicSans(
+              fontSize: 13,
+              color: Palette.texteSecondaire,
             ),
           ),
         ],
@@ -340,35 +270,35 @@ class _CataloguePageState extends State<CataloguePage> {
     );
   }
 
-  /// Barre de navigation inférieure
-  Widget _construireBottomNav(ColorScheme colorScheme) {
+  /// Navigation inférieure
+  Widget _construireBottomNav() {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFECF0EE))),
+        color: Palette.surface,
+        border: Border(top: BorderSide(color: Palette.bordure, width: 1)),
       ),
       child: BottomNavigationBar(
         currentIndex: 1,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        selectedItemColor: colorScheme.primary,
-        unselectedItemColor: const Color(0xFF9EADA8),
-        selectedLabelStyle: GoogleFonts.plusJakartaSans(
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-        unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 12),
+        selectedItemColor: Palette.primaire,
+        unselectedItemColor: Palette.texteDiscret,
+        selectedLabelStyle: GoogleFonts.publicSans(fontWeight: FontWeight.w600, fontSize: 11),
+        unselectedLabelStyle: GoogleFonts.publicSans(fontSize: 11),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home_rounded),
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view_rounded),
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view_rounded),
             label: 'Catalogue',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.folder_rounded),
+            icon: Icon(Icons.folder_outlined),
+            activeIcon: Icon(Icons.folder_rounded),
             label: 'Mes Dossiers',
           ),
         ],
@@ -376,9 +306,7 @@ class _CataloguePageState extends State<CataloguePage> {
           if (index == 0) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => const TableauDeBordCitoyenPage(),
-              ),
+              MaterialPageRoute(builder: (context) => const TableauDeBordCitoyenPage()),
             );
           } else if (index == 2) {
             Navigator.pushReplacement(

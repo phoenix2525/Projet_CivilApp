@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import 'app_theme.dart';
 import 'models/demande.dart';
 import 'mes_demandes_page.dart';
 import 'tableau_de_bord_citoyen_page.dart';
 
 /// Page de confirmation après transmission d'une demande d'acte civil.
-/// Présente le récapitulatif du dépôt, le numéro de suivi officiel
-/// et offre des raccourcis vers le suivi ou l'accueil.
+/// Présentation sous forme de récépissé officiel de mairie avec perforation.
 class ConfirmationEnvoiPage extends StatelessWidget {
   final Demande demande;
 
@@ -15,15 +16,11 @@ class ConfirmationEnvoiPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    // Calcul d'un identifiant de suivi lisible pour l'usager
+    // Calcul d'un identifiant de suivi officiel
     final numeroSuivi =
         'SN-${demande.dateDemande.year}-${demande.id.length >= 6 ? demande.id.substring(demande.id.length - 6) : demande.id}';
 
-    // Nom du bénéficiaire ou tutulaire de l'acte
+    // Nom du bénéficiaire ou titulaire de l'acte
     String beneficiaire = '${demande.citoyen.prenom} ${demande.citoyen.nom}';
     if (demande.donneesFormulaire.containsKey('prenom') &&
         demande.donneesFormulaire.containsKey('nom')) {
@@ -36,6 +33,9 @@ class ConfirmationEnvoiPage extends StatelessWidget {
       beneficiaire =
           '${demande.donneesFormulaire['prenom_defunt'] ?? ''} ${demande.donneesFormulaire['nom_defunt']} (Défunt)';
     }
+
+    final dateDepot =
+        '${demande.dateDemande.day.toString().padLeft(2, '0')}/${demande.dateDemande.month.toString().padLeft(2, '0')}/${demande.dateDemande.year} à ${demande.dateDemande.hour.toString().padLeft(2, '0')}:${demande.dateDemande.minute.toString().padLeft(2, '0')}';
 
     return PopScope(
       canPop: false,
@@ -51,223 +51,95 @@ class ConfirmationEnvoiPage extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: Palette.fond,
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 32.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
+                constraints: const BoxConstraints(maxWidth: 480),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Icone de validation
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
+                    // Badge de confirmation sobre avec turquoise validation
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Palette.statutPreteFond,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Palette.validation, width: 1.5),
+                        ),
+                        child: const Icon(
+                          Icons.check_rounded,
+                          color: Palette.validation,
+                          size: 36,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.check_circle_rounded,
-                        color: colorScheme.primary,
-                        size: 64,
+                    ),
+                    const SizedBox(height: 16),
+
+                    Text(
+                      'Demande enregistrée',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Palette.textePrimaire,
                       ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+
+                    Text(
+                      'Votre dossier a été transmis aux officiers d\'état civil.',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 13,
+                        color: Palette.texteSecondaire,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
 
-                    // Titre principal
-                    Text(
-                      'Demande transmise !',
-                      style: textTheme.headlineMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
+                    // --- Récépissé de mairie ---
+                    _construireRecepisseMairie(
+                      context,
+                      numeroSuivi: numeroSuivi,
+                      dateDepot: dateDepot,
+                      beneficiaire: beneficiaire,
+                      typeDocument: demande.document.titre,
+                      delai: demande.document.delai,
+                      frais: demande.document.frais,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 28),
 
-                    // Message  pour l'usager
-                    Text(
-                      'Votre dossier a bien été reçu par le bureau d\'état civil municipal. Il est actuellement en attente d\'instruction.',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        height: 1.4,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Récépissé / Carte de synthèse de la démarche
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            // Ligne Type de document
-                            _construireLigneRecapitulatif(
-                              context,
-                              icone: Icons.description_outlined,
-                              libelle: 'Type de document',
-                              valeur: demande.document.titre,
-                            ),
-                            const Divider(height: 28),
-
-                            // Ligne Titulaire / Concerne
-                            _construireLigneRecapitulatif(
-                              context,
-                              icone: Icons.person_outline,
-                              libelle: 'Concerne',
-                              valeur: beneficiaire,
-                            ),
-                            const Divider(height: 28),
-
-                            // Ligne Numéro de suivi avec copie
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.primary.withValues(
-                                      alpha: 0.1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    Icons.qr_code_2,
-                                    color: colorScheme.primary,
-                                    size: 22,
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'N° de Suivi officiel',
-                                        style: textTheme.labelSmall?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        numeroSuivi,
-                                        style: textTheme.titleMedium?.copyWith(
-                                          color: colorScheme.primary,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: 'Copier le numéro',
-                                  icon: const Icon(
-                                    Icons.copy_rounded,
-                                    size: 20,
-                                  ),
-                                  onPressed: () {
-                                    Clipboard.setData(
-                                      ClipboardData(text: numeroSuivi),
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Row(
-                                          children: [
-                                            Icon(
-                                              Icons.check,
-                                              color: Colors.white,
-                                              size: 18,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Numéro de suivi copié dans le presse-papiers !',
-                                            ),
-                                          ],
-                                        ),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        margin: const EdgeInsets.all(16),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 36),
-
-                    // Actions de navigation
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MesDemandesPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.assignment_outlined),
-                        label: const Text(
-                          'Suivre mes demandes',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    // Boutons d'action
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MesDemandesPage(),
                           ),
-                        ),
-                      ),
+                        );
+                      },
+                      icon: const Icon(Icons.folder_outlined, size: 18),
+                      label: const Text('Suivre mes demandes'),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const TableauDeBordCitoyenPage(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        icon: const Icon(Icons.home_outlined),
-                        label: const Text('Retour au tableau de bord'),
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TableauDeBordCitoyenPage(),
                           ),
-                        ),
-                      ),
+                          (route) => false,
+                        );
+                      },
+                      icon: const Icon(Icons.home_outlined, size: 18),
+                      label: const Text('Retour au tableau de bord'),
                     ),
                   ],
                 ),
@@ -279,48 +151,214 @@ class ConfirmationEnvoiPage extends StatelessWidget {
     );
   }
 
-  /// Helper pour construire une rangée dans le récapitulatif
-  Widget _construireLigneRecapitulatif(
+  /// Carte sous forme de récépissé officiel avec ligne de perforation
+  Widget _construireRecepisseMairie(
     BuildContext context, {
-    required IconData icone,
-    required String libelle,
-    required String valeur,
+    required String numeroSuivi,
+    required String dateDepot,
+    required String beneficiaire,
+    required String typeDocument,
+    required String delai,
+    required String frais,
   }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(8),
+    return Container(
+      decoration: BoxDecoration(
+        color: Palette.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Palette.bordure, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // En-tête du récépissé
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: const BoxDecoration(
+              color: Palette.surfaceSecondaire,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(7)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.account_balance, size: 16, color: Palette.primaire),
+                    const SizedBox(width: 8),
+                    Text(
+                      'RÉCÉPISSÉ OFFICIEL DE DÉPÔT',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Palette.primaire,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  dateDepot.split(' à ').first,
+                  style: GoogleFonts.publicSans(
+                    fontSize: 11,
+                    color: Palette.texteSecondaire,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Icon(icone, color: colorScheme.onSurfaceVariant, size: 22),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+
+          // Bloc Numéro de Suivi mis en avant
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'NUMÉRO DE DOSSIER OFFICIEL',
+                  style: GoogleFonts.publicSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Palette.texteDiscret,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Palette.surfaceSecondaire,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Palette.bordure, width: 1),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        numeroSuivi,
+                        style: GoogleFonts.publicSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: Palette.primaire,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      InkWell(
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: numeroSuivi));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Numéro $numeroSuivi copié.'),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Icon(
+                            Icons.copy_rounded,
+                            size: 16,
+                            color: Palette.texteSecondaire,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Ligne de perforation visuelle (style coupon / reçu)
+          Row(
             children: [
-              Text(
-                libelle,
-                style: textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.bold,
+              Container(
+                width: 10,
+                height: 18,
+                decoration: const BoxDecoration(
+                  color: Palette.fond,
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                valeur,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final boxWidth = constraints.constrainWidth();
+                    const dashWidth = 5.0;
+                    const dashSpace = 4.0;
+                    final dashCount = (boxWidth / (dashWidth + dashSpace)).floor();
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(dashCount, (_) {
+                        return Container(
+                          width: dashWidth,
+                          height: 1,
+                          color: Palette.bordure,
+                        );
+                      }),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                width: 10,
+                height: 18,
+                decoration: const BoxDecoration(
+                  color: Palette.fond,
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
                 ),
               ),
             ],
+          ),
+
+          // Détails administratifs
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _construireLigneInfo('Acte demandé', typeDocument),
+                const SizedBox(height: 10),
+                _construireLigneInfo('Bénéficiaire', beneficiaire),
+                const SizedBox(height: 10),
+                _construireLigneInfo('Date et heure de dépôt', dateDepot),
+                const SizedBox(height: 10),
+                _construireLigneInfo('Délai d\'instruction estimé', delai),
+                const SizedBox(height: 10),
+                _construireLigneInfo('Frais de timbre communal', frais),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construireLigneInfo(String libelle, String valeur) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          libelle,
+          style: GoogleFonts.publicSans(
+            fontSize: 12,
+            color: Palette.texteSecondaire,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Text(
+            valeur,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.publicSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Palette.textePrimaire,
+            ),
           ),
         ),
       ],

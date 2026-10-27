@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app_theme.dart';
 
 class Document {
   final String id;
@@ -32,7 +33,7 @@ final List<Document> documentsDisponibles = [
     description: 'Copie intégrale de l\'acte de naissance, certifiée conforme par l\'officier d\'état civil.',
     icon: Icons.child_care,
     imagePath: 'assets/images/doc_naissance.jpg',
-    couleur: Colors.green,
+    couleur: Palette.acteNaissance,
     piecesAFournir: [
       'Copie de la CNI/Passeport du déclarant (Parent)',
       'Certificat d\'accouchement ou d\'attestation médicale de naissance',
@@ -47,7 +48,7 @@ final List<Document> documentsDisponibles = [
     description: 'Document synthétique reprenant les informations essentielles de l\'acte de naissance.',
     icon: Icons.assignment,
     imagePath: 'assets/images/doc_extrait.jpg',
-    couleur: Colors.blue,
+    couleur: Palette.acteExtrait,
     piecesAFournir: [
       'Copie d\'une pièce d\'identité valide (CNI ou Passeport)',
       'Ancien extrait de naissance ou numéro de registre d\'acte',
@@ -61,7 +62,7 @@ final List<Document> documentsDisponibles = [
     description: 'Attestation officielle de l\'union civile, délivrée suite à la célébration du mariage.',
     icon: Icons.favorite,
     imagePath: 'assets/images/doc_mariage.jpg',
-    couleur: Colors.red,
+    couleur: Palette.acteMariage,
     piecesAFournir: [
       'Copie de la CNI de l\'époux',
       'Copie de la CNI de l\'épouse',
@@ -76,7 +77,7 @@ final List<Document> documentsDisponibles = [
     description: 'Document constatant officiellement le décès d\'une personne, nécessaire pour les démarches administratives.',
     icon: Icons.account_box,
     imagePath: 'assets/images/doc_deces.jpg',
-    couleur: Colors.grey,
+    couleur: Palette.acteDeces,
     piecesAFournir: [
       'Certificat médical de constatation de décès',
       'Copie de la CNI du défunt (si disponible)',

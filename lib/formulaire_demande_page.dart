@@ -1,5 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'app_theme.dart';
 import 'models/document.dart';
 import 'models/demande.dart';
 import 'confirmation_envoi_page.dart';
@@ -132,7 +133,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
               Expanded(child: Text('Veuillez cocher toutes les pièces requises.')),
             ],
           ),
-          backgroundColor: Colors.orange.shade700,
+          backgroundColor: Palette.statutEnCours,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: const EdgeInsets.all(16),
@@ -192,65 +193,102 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: Palette.fond,
       appBar: AppBar(
         title: Text(
           'Demande : ${widget.document.titre}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: GoogleFonts.publicSans(fontWeight: FontWeight.w700, fontSize: 16),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Palette.primaire,
+        foregroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: colorScheme.primary,
-        // AppBar glassmorphisme pour un rendu moderne
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: colorScheme.surface.withValues(alpha: 0.7)),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // En-tête du document sélectionné sobre
+                _construireEnTeteDocument(textTheme),
+                const SizedBox(height: 20),
+
+                // Formulaire adapté au type d'acte sélectionné
+                _construireFormulaireSpecifique(),
+                const SizedBox(height: 20),
+
+                // Section checklist des pièces justificatives
+                _construireChecklistPieces(textTheme),
+                const SizedBox(height: 24),
+
+                // Boutons d'action (Annuler / Envoyer)
+                _construireBoutonsAction(),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
-      body: Stack(
+    );
+  }
+
+  /// En-tête avec l'image du document et bordure sobre
+  Widget _construireEnTeteDocument(TextTheme textTheme) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Palette.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Palette.bordure, width: 1),
+      ),
+      child: Row(
         children: [
-          // Fond dégradé léger
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFE8F5E9), Color(0xFFFAFAFA)],
+          Hero(
+            tag: 'doc_icon_${widget.document.id}',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.asset(
+                widget.document.imagePath,
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 60,
+                  height: 60,
+                  color: Palette.surfaceSecondaire,
+                  child: Icon(widget.document.icon, color: widget.document.couleur, size: 28),
+                ),
               ),
             ),
           ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // En-tête du document sélectionné avec effet Glassmorphism et Hero
-                    _construireEnTeteDocument(colorScheme, textTheme),
-                    const SizedBox(height: 24),
-
-                    // Formulaire adapté au type d'acte sélectionné
-                    _construireFormulaireSpecifique(colorScheme),
-                    const SizedBox(height: 24),
-
-                    // Section checklist des pièces justificatives
-                    _construireChecklistPieces(colorScheme, textTheme),
-                    const SizedBox(height: 32),
-
-                    // Boutons d'action (Annuler / Envoyer)
-                    _construireBoutonsAction(colorScheme),
-                    const SizedBox(height: 24),
-                  ],
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.document.titre,
+                  style: GoogleFonts.publicSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Palette.textePrimaire,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 3),
+                Text(
+                  widget.document.description,
+                  style: GoogleFonts.publicSans(
+                    fontSize: 12,
+                    color: Palette.texteSecondaire,
+                    height: 1.35,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -258,73 +296,8 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
     );
   }
 
-  /// En-tête avec l'image du document et l'effet Hero venant du catalogue
-  Widget _construireEnTeteDocument(ColorScheme colorScheme, TextTheme textTheme) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.05),
-                blurRadius: 10,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Image animée Hero : suit la transition depuis le catalogue
-              Hero(
-                tag: 'doc_icon_${widget.document.id}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    widget.document.imagePath,
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: 70,
-                      height: 70,
-                      color: widget.document.couleur.withValues(alpha: 0.2),
-                      child: Icon(widget.document.icon, color: widget.document.couleur, size: 32),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.document.titre,
-                      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.document.description,
-                      style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   /// Construit le formulaire de saisie approprié selon le type d'acte
-  Widget _construireFormulaireSpecifique(ColorScheme colorScheme) {
+  Widget _construireFormulaireSpecifique() {
     switch (widget.document.id) {
       case 'acte_naissance':
         return _formulaireActeNaissance();
@@ -340,44 +313,61 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
   }
 
   /// Checklist interactive des pièces justificatives à cocher
-  Widget _construireChecklistPieces(ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _construireChecklistPieces(TextTheme textTheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pièces justificatives à fournir',
-          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          'Pièces justificatives requises',
+          style: GoogleFonts.publicSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Palette.textePrimaire,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
-          'Cochez chaque pièce que vous avez en votre possession :',
-          style: textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+          'Veuillez confirmer que vous disposez des originaux obligatoires :',
+          style: GoogleFonts.publicSans(
+            fontSize: 12,
+            color: Palette.texteSecondaire,
+          ),
         ),
-        const Divider(height: 20),
+        const SizedBox(height: 12),
 
-        // Génération de la checklist selon les pièces du document sélectionné
         ...widget.document.piecesAFournir.map((piece) {
           final estCochee = _piecesCochees[piece] ?? false;
           return Container(
             margin: const EdgeInsets.only(bottom: 8),
             decoration: BoxDecoration(
-              color: estCochee ? Colors.green.shade50 : Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              color: estCochee ? Palette.statutPreteFond : Palette.surface,
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: estCochee ? Colors.green.shade400 : Colors.grey.shade300,
+                color: estCochee ? Palette.validation : Palette.bordure,
+                width: 1,
               ),
             ),
             child: CheckboxListTile(
-              title: Text(piece, style: textTheme.bodyMedium),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              dense: true,
+              title: Text(
+                piece,
+                style: GoogleFonts.publicSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Palette.textePrimaire,
+                ),
+              ),
               subtitle: Text(
-                estCochee ? 'Pièce confirmée ✓' : 'Pièce requise *',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: estCochee ? Colors.green.shade700 : Colors.red.shade400,
+                estCochee ? 'Pièce confirmée' : 'Pièce requise obligatoire',
+                style: GoogleFonts.publicSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: estCochee ? Palette.validation : Palette.statutRejetee,
                 ),
               ),
               value: estCochee,
-              activeColor: colorScheme.primary,
+              activeColor: Palette.validation,
               onChanged: (valeur) {
                 setState(() {
                   _piecesCochees[piece] = valeur ?? false;
@@ -391,30 +381,21 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
   }
 
   /// Boutons bas de page : Annuler et Envoyer la demande
-  Widget _construireBoutonsAction(ColorScheme colorScheme) {
+  Widget _construireBoutonsAction() {
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              side: const BorderSide(color: Colors.grey),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Annuler', style: TextStyle(fontSize: 16, color: Colors.black54)),
+            child: const Text('Annuler'),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 14),
         Expanded(
           child: ElevatedButton.icon(
             onPressed: _soumettreDemande,
-            icon: const Icon(Icons.send, color: Colors.white),
-            label: const Text('Envoyer', style: TextStyle(fontSize: 16, color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
+            icon: const Icon(Icons.send_rounded, size: 16),
+            label: const Text('Envoyer la demande'),
           ),
         ),
       ],
@@ -462,7 +443,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                initialValue: _sexeTitulaire,
+                value: _sexeTitulaire,
                 decoration: const InputDecoration(labelText: 'Sexe *', border: OutlineInputBorder()),
                 items: const [
                   DropdownMenuItem(value: 'Masculin', child: Text('Masculin')),
@@ -596,7 +577,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                initialValue: _sexeTitulaire,
+                value: _sexeTitulaire,
                 decoration: const InputDecoration(labelText: 'Sexe *', border: OutlineInputBorder()),
                 items: const [
                   DropdownMenuItem(value: 'Masculin', child: Text('Masculin')),
@@ -799,7 +780,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           isExpanded: true,
-          initialValue: _regimeMatrimonial,
+          value: _regimeMatrimonial,
           decoration: const InputDecoration(
             labelText: 'Régime Matrimonial *',
             border: OutlineInputBorder(),
@@ -917,7 +898,7 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                initialValue: _lienParenteDeclarant,
+                value: _lienParenteDeclarant,
                 decoration: const InputDecoration(
                   labelText: 'Lien de Parenté *',
                   border: OutlineInputBorder(),
@@ -958,13 +939,13 @@ class _FormulaireDemandePageState extends State<FormulaireDemandePage> {
         children: [
           Text(
             titre,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+            style: GoogleFonts.publicSans(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Palette.primaire,
             ),
           ),
-          const Divider(),
+          const Divider(color: Palette.bordure, height: 16),
         ],
       ),
     );

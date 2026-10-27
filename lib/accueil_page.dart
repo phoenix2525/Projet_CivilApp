@@ -1,108 +1,164 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'app_theme.dart';
 import 'creer_profil_page.dart';
 import 'connexion_agent_page.dart';
 
-/// Page d'accueil de l'application CivilApp.
+/// Page d'accueil officielle de l'application CivilApp.
+/// Interface administrative sobre, respectant l'identité visuelle du logo communal.
 class AccueilPage extends StatelessWidget {
   const AccueilPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF062917), // Vert très sombre
-                    Color(0xFF0A6640), // Vert émeraude
-                    Color(0xFF083D26), // Profond
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
+      backgroundColor: Palette.fond,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Bandeau supérieur institutionnel
+              _construireBandeauHaut(),
 
-          // Cercles décoratifs flous en arrière-plan
-          Positioned(
-            top: -80,
-            right: -60,
-            child: Container(
-              width: 280,
-              height: 280,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF00C896).withValues(alpha: 0.12),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: size.height * 0.25,
-            left: -80,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF1A9260).withValues(alpha: 0.15),
-              ),
-            ),
-          ),
-
-          // Contenu principal
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+              // Section centrale : choix de l'espace
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 60),
+                    Text(
+                      'Portail des démarches',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Palette.textePrimaire,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Sélectionnez votre profil d\'accès pour continuer.',
+                      style: GoogleFonts.publicSans(
+                        fontSize: 13,
+                        color: Palette.texteSecondaire,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
-                    // Logo et nom de l'application
-                    _construireEntete(),
-
-                    const SizedBox(height: 64),
-
-                    // Carte principale glassmorphism
-                    _construireCarteGlass(context),
-
-                    const SizedBox(height: 32),
-
-                    // Mention de sécurité en bas
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.lock_outline,
-                          size: 14,
-                          color: Colors.white38,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Données chiffrées — République du Sénégal',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ],
+                    // Carte d'accès Espace Citoyen
+                    _construireEntree(
+                      context,
+                      titre: 'Espace Citoyen',
+                      description: 'Effectuez une demande d\'acte ou suivez un dossier en cours.',
+                      icone: Icons.person_outline_rounded,
+                      estPrimaire: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CreerProfilPage()),
+                        );
+                      },
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 14),
+
+                    // Carte d'accès Espace Agent Mairie
+                    _construireEntree(
+                      context,
+                      titre: 'Espace Agent Mairie',
+                      description: 'Accès réservé au traitement et à la délivrance des actes civils.',
+                      icone: Icons.admin_panel_settings_outlined,
+                      estPrimaire: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ConnexionAgentPage()),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 36),
+
+                    // Mention officielle et légale
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.verified_outlined,
+                            size: 15,
+                            color: Palette.texteDiscret,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'République du Sénégal — Ministère des Collectivités',
+                            style: GoogleFonts.publicSans(
+                              fontSize: 11,
+                              color: Palette.texteDiscret,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Bandeau institutionnel bleu nuit avec le logo officiel
+  Widget _construireBandeauHaut() {
+    return Container(
+      color: Palette.primaire,
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 36.0),
+      child: Column(
+        children: [
+          // Logo CivilApp officiel
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Palette.bordure, width: 1),
+            ),
+            child: Image.asset(
+              'assets/images/logo_civilapp.png',
+              height: 64,
+              width: 64,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.account_balance_rounded,
+                size: 48,
+                color: Palette.primaire,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+
+          Text(
+            'CivilApp',
+            style: GoogleFonts.publicSans(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          Text(
+            'Système d\'Information de l\'État Civil',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.publicSans(
+              fontSize: 13,
+              color: Palette.texteSurSombreMuted,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],
@@ -110,248 +166,72 @@ class AccueilPage extends StatelessWidget {
     );
   }
 
-  /// En-tête avec icône et slogan
-  Widget _construireEntete() {
-    return Column(
-      children: [
-        // Icône principale avec halo lumineux
-        Container(
-          width: 88,
-          height: 88,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.1),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00C896).withValues(alpha: 0.3),
-                blurRadius: 24,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.account_balance_rounded,
-            size: 42,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Text(
-          'CivilApp',
-          style: GoogleFonts.hankenGrotesk(
-            fontSize: 42,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-            letterSpacing: -1,
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        Text(
-          "L'État Civil Sénégalais, à portée de main",
-          textAlign: TextAlign.center,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 15,
-            color: Colors.white60,
-            fontWeight: FontWeight.w400,
-            height: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Carte principale
-  Widget _construireCarteGlass(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.18),
-              width: 1.5,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Choisissez votre espace',
-                style: GoogleFonts.hankenGrotesk(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Accédez à vos services administratifs en ligne.',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  color: Colors.white54,
-                ),
-              ),
-              const SizedBox(height: 28),
-
-              // Bouton citoyen
-              _construireBoutonCitoyen(context),
-              const SizedBox(height: 14),
-
-              // Bouton agent
-              _construireBoutonAgent(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Bouton espace citoyen
-  Widget _construireBoutonCitoyen(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CreerProfilPage()),
-        );
-      },
+  /// Carte d'accès à un espace
+  Widget _construireEntree(
+    BuildContext context, {
+    required String titre,
+    required String description,
+    required IconData icone,
+    required bool estPrimaire,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF00C896), Color(0xFF0A8A5A)],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF00C896).withValues(alpha: 0.35),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.person_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Espace Citoyen',
-                    style: GoogleFonts.hankenGrotesk(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    'Démarrez ou suivez une demande',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: Colors.white,
-              size: 16,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Bouton espace agent
-  Widget _construireBoutonAgent(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ConnexionAgentPage()),
-        );
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(16),
+          color: Palette.surface,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.25),
-            width: 1.5,
+            color: estPrimaire ? Palette.primaire : Palette.bordure,
+            width: estPrimaire ? 1.5 : 1,
           ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
+                color: estPrimaire ? Palette.primaire : Palette.surfaceSecondaire,
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(
-                Icons.shield_rounded,
-                color: Colors.white,
-                size: 22,
+              child: Icon(
+                icone,
+                color: estPrimaire ? Colors.white : Palette.textePrimaire,
+                size: 24,
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Espace Agent Mairie',
-                    style: GoogleFonts.hankenGrotesk(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
+                    titre,
+                    style: GoogleFonts.publicSans(
                       fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Palette.textePrimaire,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    'Gestion et traitement des dossiers',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white54,
+                    description,
+                    style: GoogleFonts.publicSans(
                       fontSize: 12,
+                      color: Palette.texteSecondaire,
+                      height: 1.35,
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 8),
             const Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Colors.white38,
-              size: 16,
+              color: Palette.texteDiscret,
+              size: 14,
             ),
           ],
         ),

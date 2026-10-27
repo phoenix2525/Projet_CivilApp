@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'app_theme.dart';
 import 'models/document.dart';
 import 'formulaire_demande_page.dart';
 
-/// Page de détails d'un document administratif.
-/// Présente les informations, pièces requises et étapes de la démarche.
+/// Page de détails d'un document administratif officiel.
+/// Présentation sobre des pièces requises et étapes d'instruction.
 class DetailsDocumentPage extends StatelessWidget {
   final Document document;
 
@@ -12,26 +14,17 @@ class DetailsDocumentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6F4),
+      backgroundColor: Palette.fond,
       body: CustomScrollView(
         slivers: [
-          // AppBar avec image Hero en fond
+          // AppBar avec image du document et bandeau sombre uni
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 180,
             pinned: true,
-            backgroundColor: document.couleur,
+            backgroundColor: Palette.primaire,
             leading: IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 18),
-              ),
+              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -39,32 +32,21 @@ class DetailsDocumentPage extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Image Hero
                   Hero(
                     tag: 'doc_icon_${document.id}',
                     child: Image.asset(
                       document.imagePath,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: document.couleur.withValues(alpha: 0.3),
-                        child: Icon(document.icon, size: 80, color: Colors.white.withValues(alpha: 0.5)),
+                        color: Palette.primaire,
+                        child: Icon(document.icon, size: 60, color: Colors.white24),
                       ),
                     ),
                   ),
-                  // Gradient de lisibilité
+                  // Scrim sombre uniforme pour assurer la lisibilité
                   Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          document.couleur.withValues(alpha: 0.85),
-                        ],
-                      ),
-                    ),
+                    color: Colors.black.withOpacity(0.55),
                   ),
-                  // Titre en bas de l'image
                   Positioned(
                     bottom: 16,
                     left: 20,
@@ -72,28 +54,21 @@ class DetailsDocumentPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'ÉTAT CIVIL',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white70,
-                              letterSpacing: 1,
-                            ),
+                        Text(
+                          'ACTE OFFICIEL D\'ÉTAT CIVIL',
+                          style: GoogleFonts.publicSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: Palette.texteSurSombreMuted,
+                            letterSpacing: 0.8,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           document.titre,
-                          style: GoogleFonts.hankenGrotesk(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
+                          style: GoogleFonts.publicSans(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),
@@ -105,64 +80,71 @@ class DetailsDocumentPage extends StatelessWidget {
             ),
           ),
 
-          // Corps de la page
+          // Contenu informatif
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Badges délai et frais
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 8,
+                  // Badges d'information administrative
+                  Row(
                     children: [
-                      _construireBadge(Icons.schedule_rounded, document.delai, const Color(0xFFF57C00)),
-                      _construireBadge(Icons.payments_rounded, document.frais, const Color(0xFF0A6640)),
+                      _construireBadge(Icons.schedule, 'Délai : ${document.delai}'),
+                      const SizedBox(width: 10),
+                      _construireBadge(Icons.payments_outlined, 'Frais : ${document.frais}'),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
-                  // Description
-                  Text(
-                    document.description,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                      height: 1.6,
+                  // Description officielle
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Palette.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Palette.bordure, width: 1),
+                    ),
+                    child: Text(
+                      document.description,
+                      style: GoogleFonts.publicSans(
+                        fontSize: 13,
+                        color: Palette.texteSecondaire,
+                        height: 1.5,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 24),
 
-                  // Section pièces justificatives
-                  _construireTitreSection('Pièces justificatives requises', Icons.checklist_rounded),
-                  const SizedBox(height: 6),
+                  // Pièces justificatives requises
+                  _construireTitreSection('Pièces à fournir', Icons.checklist_outlined),
+                  const SizedBox(height: 4),
                   Text(
-                    'Préparez ces documents avant de démarrer votre demande.',
-                    style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey.shade500),
+                    'Documents obligatoires lors du retrait en mairie.',
+                    style: GoogleFonts.publicSans(fontSize: 12, color: Palette.texteDiscret),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
 
                   ...document.piecesAFournir.asMap().entries.map((entry) {
-                    return _construireItemPiece(entry.key + 1, entry.value, colorScheme);
+                    return _construireItemPiece(entry.key + 1, entry.value);
                   }),
+
+                  const SizedBox(height: 24),
+
+                  // Étapes de délivrance
+                  _construireTitreSection('Instruction du dossier', Icons.timeline_outlined),
+                  const SizedBox(height: 12),
+
+                  _construireEtape('1', 'Saisie du formulaire',
+                      'Renseignement des données d\'état civil et validation des conditions.', false),
+                  _construireEtape('2', 'Contrôle des registres',
+                      'Vérification de conformité dans le registre communal par un officier.', false),
+                  _construireEtape('3', 'Signature & Retrait',
+                      'Édition du document timbré et mise à disposition au guichet municipal.', true),
 
                   const SizedBox(height: 28),
 
-                  // Section étapes
-                  _construireTitreSection('Étapes de traitement', Icons.timeline_rounded),
-                  const SizedBox(height: 14),
-
-                  _construireEtape(context, '1', 'Soumission en ligne',
-                      'Remplissez le formulaire et validez la checklist des pièces.', false),
-                  _construireEtape(context, '2', 'Instruction & Vérification',
-                      'Vérification dans les registres municipaux par l\'officier d\'état civil.', false),
-                  _construireEtape(context, '3', 'Délivrance & Retrait',
-                      'Notification de mise à disposition et retrait du document officiel en mairie.', true),
-
-                  const SizedBox(height: 32),
-
-                  // Bouton d'action principal
+                  // Bouton de démarche
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -174,14 +156,10 @@ class DetailsDocumentPage extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.arrow_forward_rounded),
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                       label: Text(
                         'Faire une demande pour cet acte',
-                        style: GoogleFonts.hankenGrotesk(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        style: GoogleFonts.publicSans(fontSize: 14, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -195,26 +173,25 @@ class DetailsDocumentPage extends StatelessWidget {
     );
   }
 
-  /// Badge d'information (délai ou frais)
-  Widget _construireBadge(IconData icone, String texte, Color couleur) {
+  Widget _construireBadge(IconData icone, String texte) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: couleur.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: couleur.withValues(alpha: 0.25)),
+        color: Palette.surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Palette.bordure, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icone, size: 16, color: couleur),
+          Icon(icone, size: 14, color: Palette.texteSecondaire),
           const SizedBox(width: 6),
           Text(
             texte,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              color: couleur,
-              fontWeight: FontWeight.w700,
+            style: GoogleFonts.publicSans(
+              fontSize: 12,
+              color: Palette.textePrimaire,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -222,57 +199,64 @@ class DetailsDocumentPage extends StatelessWidget {
     );
   }
 
-  /// Titre de section avec icône
   Widget _construireTitreSection(String titre, IconData icone) {
     return Row(
       children: [
-        Icon(icone, size: 20, color: const Color(0xFF0A6640)),
+        Icon(icone, size: 18, color: Palette.primaire),
         const SizedBox(width: 8),
         Text(
           titre,
-          style: GoogleFonts.hankenGrotesk(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF1A2E26)),
+          style: GoogleFonts.publicSans(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: Palette.textePrimaire,
+          ),
         ),
       ],
     );
   }
 
-  /// Ligne de pièce justificative numérotée
-  Widget _construireItemPiece(int numero, String piece, ColorScheme colorScheme) {
+  Widget _construireItemPiece(int numero, String piece) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.12)),
+        color: Palette.surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Palette.bordure, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Numéro de la pièce
           Container(
-            width: 26,
-            height: 26,
+            width: 22,
+            height: 22,
             decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
+              color: Palette.surfaceSecondaire,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Palette.bordure, width: 1),
             ),
             child: Center(
               child: Text(
                 '$numero',
-                style: GoogleFonts.hankenGrotesk(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
+                style: GoogleFonts.publicSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Palette.primaire,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               piece,
-              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w500, height: 1.4),
+              style: GoogleFonts.publicSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Palette.textePrimaire,
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -280,63 +264,62 @@ class DetailsDocumentPage extends StatelessWidget {
     );
   }
 
-  /// Étape numérotée dans le parcours administratif
   Widget _construireEtape(
-    BuildContext context,
     String numero,
     String titre,
     String description,
     bool estDerniere,
   ) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           children: [
             Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.secondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              width: 26,
+              height: 26,
+              decoration: const BoxDecoration(
+                color: Palette.primaire,
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Text(
                   numero,
-                  style: GoogleFonts.hankenGrotesk(
+                  style: GoogleFonts.publicSans(
                     color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ),
             if (!estDerniere)
-              Container(width: 2, height: 40, color: const Color(0xFFDDE5E2)),
+              Container(width: 2, height: 36, color: Palette.bordure),
           ],
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 12),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 6),
                 Text(
                   titre,
-                  style: GoogleFonts.hankenGrotesk(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: GoogleFonts.publicSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Palette.textePrimaire,
+                  ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   description,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey.shade600, height: 1.4),
+                  style: GoogleFonts.publicSans(
+                    fontSize: 12,
+                    color: Palette.texteSecondaire,
+                    height: 1.35,
+                  ),
                 ),
               ],
             ),
